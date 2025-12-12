@@ -1,17 +1,36 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Shape } from 'three';
 
 export default function Workbench({ onSectionSelect, isNightMode, onToggleLight, ...props }) {
+    const printHeadRef = useRef();
+    const [printerHovered, setPrinterHovered] = useState(false);
+
+    useFrame((state) => {
+        if (printerHovered && printHeadRef.current) {
+            printHeadRef.current.position.x = Math.sin(state.clock.elapsedTime * 8) * 0.25;
+        }
+    });
+
     // Helper to make an object interactive
-    const InteractiveObject = ({ id, children, onClick: customClick, ...meshProps }) => {
+    const InteractiveObject = ({ id, children, onClick: customClick, onHoverChange, ...meshProps }) => {
         const [hovered, setHover] = useState(false);
 
         return React.createElement(
             'group',
             {
                 ...meshProps,
-                onPointerOver: (e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = 'pointer'; },
-                onPointerOut: (e) => { setHover(false); document.body.style.cursor = 'auto'; },
+                onPointerOver: (e) => { 
+                    e.stopPropagation(); 
+                    setHover(true); 
+                    if (onHoverChange) onHoverChange(true);
+                    document.body.style.cursor = 'pointer'; 
+                },
+                onPointerOut: (e) => { 
+                    setHover(false); 
+                    if (onHoverChange) onHoverChange(false);
+                    document.body.style.cursor = 'auto'; 
+                },
                 onClick: (e) => { 
                     e.stopPropagation(); 
                     if (customClick) customClick();
@@ -94,7 +113,12 @@ export default function Workbench({ onSectionSelect, isNightMode, onToggleLight,
         // 3D Printer - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'printer', position: [2, 0.2, 0.5], rotation: [0, -0.5, 0] },
+            { 
+                id: 'printer', 
+                position: [2, 0.2, 0.5], 
+                rotation: [0, -0.5, 0],
+                onHoverChange: setPrinterHovered 
+            },
             // Bed (Base)
             React.createElement(
                 'mesh',
@@ -122,6 +146,25 @@ export default function Workbench({ onSectionSelect, isNightMode, onToggleLight,
                 { position: [0, 1.1, 0] },
                 React.createElement('boxGeometry', { args: [1, 0.1, 0.1] }),
                 React.createElement('meshStandardMaterial', { color: '#333' })
+            ),
+            // Print Head (Animated)
+            React.createElement(
+                'group',
+                { ref: printHeadRef, position: [0, 0.8, 0] },
+                // Extruder Block
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.12, 0] },
+                    React.createElement('boxGeometry', { args: [0.15, 0.2, 0.15] }),
+                    React.createElement('meshStandardMaterial', { color: '#555' })
+                ),
+                // Nozzle
+                React.createElement(
+                    'mesh',
+                    { position: [0, -0.03, 0] },
+                    React.createElement('cylinderGeometry', { args: [0.01, 0.005, 0.02] }),
+                    React.createElement('meshStandardMaterial', { color: '#ffff00ff' })
+                )
             ),
             // Printed Object (Little Pyramid/Cone)
             React.createElement(
