@@ -14,7 +14,7 @@ export default function App() {
             const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
             setDynamicContent({
                 title: "Coffee Fact ☕",
-                text: "As a coffee lover, here is a random fact:" + randomFact
+                text: "As a coffee lover, here is a random fact: " + randomFact
             });
             setActiveSection('coffee');
         } else {
