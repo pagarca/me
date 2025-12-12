@@ -10,7 +10,8 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         Canvas,
         {
             shadows: true,
-            style: { width: '100%', height: '100%', background: bgColor }
+            style: { width: '100%', height: '100%', background: bgColor },
+            onPointerMissed: () => onSectionSelect(null)
         },
         // Fog for depth
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
@@ -45,7 +46,15 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         // Floor (Infinite plane handled by fog, but we keep mesh for raycasting/grounding)
         React.createElement(
             'mesh',
-            { rotation: [-Math.PI / 2, 0, 0], position: [0, -3, 0], receiveShadow: true },
+            { 
+                rotation: [-Math.PI / 2, 0, 0], 
+                position: [0, -3, 0], 
+                receiveShadow: true,
+                onClick: (e) => { 
+                    e.stopPropagation(); 
+                    onSectionSelect(null); 
+                }
+            },
             React.createElement('planeGeometry', { args: [100, 100] }),
             React.createElement('meshStandardMaterial', { color: bgColor })
         ),

@@ -2,6 +2,33 @@ import React, { useState, useCallback } from 'react';
 import Scene from './Scene.js';
 import { coffeeFacts } from './coffeeFacts.js';
 
+const content = {
+    monitor: {
+        title: "About Me",
+        text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things.",
+        image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
+        socials: [
+            { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
+            { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/", icon: "fa-brands fa-linkedin" },
+            { name: "ORCID", url: "https://orcid.org/0000-0003-3408-3249", icon: "fa-brands fa-orcid" },
+            { name: "Email", url: "mailto:paugarrigues@gmail.com", icon: "fa-solid fa-envelope" }
+        ]
+    },
+    printer: {
+        title: "3D Fabrication",
+        text: "From CAD to reality. I design complex mechanisms in Fusion 360 and bring them to life with FDM and SLA printing.",
+        socials: [
+            { name: "My Printables", url: "https://www.printables.com/@__Rasputin___253661", icon: "fa-solid fa-cube" }
+        ]
+    },
+    camera: {
+        title: "Computer Vision Engineer",
+        text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
+    },
+    // Fallback or specific static content for coffee can be empty since we use dynamicContent
+    coffee: {}
+};
+
 export default function App() {
     const [activeSection, setActiveSection] = useState(null);
     const [isNightMode, setNightMode] = useState(false);
@@ -55,32 +82,7 @@ export default function App() {
         }
     }, []);
 
-    const content = {
-        monitor: {
-            title: "About Me",
-            text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things.",
-            image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
-            socials: [
-                { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
-                { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/", icon: "fa-brands fa-linkedin" },
-                { name: "ORCID", url: "https://orcid.org/0000-0003-3408-3249", icon: "fa-brands fa-orcid" },
-                { name: "Email", url: "mailto:paugarrigues@gmail.com", icon: "fa-solid fa-envelope" }
-            ]
-        },
-        printer: {
-            title: "3D Fabrication",
-            text: "From CAD to reality. I design complex mechanisms in Fusion 360 and bring them to life with FDM and SLA printing.",
-            socials: [
-                { name: "My Printables", url: "https://www.printables.com/@__Rasputin___253661", icon: "fa-solid fa-cube" }
-            ]
-        },
-        camera: {
-            title: "Computer Vision Engineer",
-            text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
-        },
-        // Fallback or specific static content for coffee can be empty since we use dynamicContent
-        coffee: {}
-    };
+
 
     // Helper to get current content
     const currentData = dynamicContent || content[activeSection];
