@@ -1,15 +1,20 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import Workbench from './Workbench.js';
 
 export default function Scene({ onSectionSelect, isNightMode, onToggleLight }) {
+    const bgColor = isNightMode ? '#050505' : '#171720';
+
     return React.createElement(
         Canvas,
         {
             shadows: true,
-            style: { width: '100%', height: '100%' }
+            style: { width: '100%', height: '100%', background: bgColor }
         },
+        // Fog for depth
+        React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
+
         // Camera
         React.createElement(PerspectiveCamera, { makeDefault: true, position: [0, 4, 8], fov: 45 }),
         
@@ -27,16 +32,25 @@ export default function Scene({ onSectionSelect, isNightMode, onToggleLight }) {
             castShadow: true 
         }),
         
-        // Environment (City lights remain, but scene gets dark)
+        // Environment
         React.createElement(Environment, { preset: 'city' }),
 
-        // Floor
+        // Floor (Infinite plane handled by fog, but we keep mesh for raycasting/grounding)
         React.createElement(
             'mesh',
             { rotation: [-Math.PI / 2, 0, 0], position: [0, -3, 0], receiveShadow: true },
-            React.createElement('planeGeometry', { args: [50, 50] }),
-            React.createElement('meshStandardMaterial', { color: '#111' })
+            React.createElement('planeGeometry', { args: [100, 100] }),
+            React.createElement('meshStandardMaterial', { color: bgColor })
         ),
+        
+        // Soft Shadows
+        React.createElement(ContactShadows, { 
+            position: [0, -2.99, 0], 
+            opacity: 0.4, 
+            scale: 40, 
+            blur: 2, 
+            far: 4.5 
+        }),
 
         // Interactive Workbench
         React.createElement(Workbench, { 

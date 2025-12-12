@@ -7,7 +7,39 @@ export default function App() {
     const [isNightMode, setNightMode] = useState(false);
     const [dynamicContent, setDynamicContent] = useState(null);
 
+    // Typewriter State
+    const [text, setText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [loopNum, setLoopNum] = useState(0);
+    const [typingSpeed, setTypingSpeed] = useState(150);
+
     const toggleLight = () => setNightMode(!isNightMode);
+
+    // Typewriter Effect
+    React.useEffect(() => {
+        const titles = ["Pau's Workbench"];
+        const i = loopNum % titles.length;
+        const fullText = titles[i];
+
+        const handleType = () => {
+            setText(isDeleting 
+                ? fullText.substring(0, text.length - 1) 
+                : fullText.substring(0, text.length + 1)
+            );
+
+            setTypingSpeed(isDeleting ? 30 : 150);
+
+            if (!isDeleting && text === fullText) {
+                setTimeout(() => setIsDeleting(true), 2000); // Pause at end
+            } else if (isDeleting && text === '') {
+                setIsDeleting(false);
+                setLoopNum(loopNum + 1);
+            }
+        };
+
+        const timer = setTimeout(handleType, typingSpeed);
+        return () => clearTimeout(timer);
+    }, [text, isDeleting, loopNum]);
 
     const handleSectionSelect = (id) => {
         if (id === 'coffee') {
@@ -31,6 +63,7 @@ export default function App() {
             socials: [
                 { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
                 { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/", icon: "fa-brands fa-linkedin" },
+                { name: "ORCID", url: "https://orcid.org/0000-0003-3408-3249", icon: "fa-brands fa-orcid" },
                 { name: "Email", url: "mailto:paugarrigues@gmail.com", icon: "fa-solid fa-envelope" }
             ]
         },
@@ -59,7 +92,10 @@ export default function App() {
         React.createElement(
             'div',
             { className: 'overlay' },
-            React.createElement('h1', null, "Pau's Workbench"),
+            React.createElement('h1', null, 
+                text,
+                React.createElement('span', { className: 'cursor' }, '|')
+            ),
             React.createElement('p', null, "Select an object to explore"),
 
             // Dynamic Content Card
