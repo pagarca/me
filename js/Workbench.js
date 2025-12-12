@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Shape } from 'three';
 
 export default function Workbench({ onSectionSelect, ...props }) {
     // Helper to make an object interactive
@@ -55,7 +56,7 @@ export default function Workbench({ onSectionSelect, ...props }) {
             React.createElement(
                 'mesh',
                 { position: [0, -0.2, 0] },
-                React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.5] }),
+                React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.4] }),
                 React.createElement('meshStandardMaterial', { color: '#222' })
             ),
             // Screen Glow
@@ -132,7 +133,28 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 { position: [0, 0, 0.3], rotation: [0, 0, 0] },
                 React.createElement('torusGeometry', { args: [0.2, 0.02, 16, 32] }),
                 React.createElement('meshStandardMaterial', { color: '#silver' })
-            )
+            ),
+            // Viewfinder (Extruded Trapezoid)
+            (() => {
+                const shape = useMemo(() => {
+                    const s = new Shape();
+                    s.moveTo(-0.15, 0);
+                    s.lineTo(0.15, 0);
+                    s.lineTo(0.1, 0.15);
+                    s.lineTo(-0.1, 0.15);
+                    s.lineTo(-0.15, 0);
+                    return s;
+                }, []);
+                
+                const extrudeSettings = { depth: 0.3, bevelEnabled: false };
+                
+                return React.createElement(
+                    'mesh',
+                    { position: [0, 0.25, -0.15], rotation: [0, 0, 0] }, // Centered on top (y=0.25 is top of body), moved back by half depth
+                    React.createElement('extrudeGeometry', { args: [shape, extrudeSettings] }),
+                    React.createElement('meshStandardMaterial', { color: '#181818' })
+                );
+            })()
         )
     );
 }
