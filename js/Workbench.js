@@ -254,6 +254,14 @@ export default function Workbench({ onSectionSelect, isNightMode, onToggleLight,
                     React.createElement('coneGeometry', { args: [0.25, 0.5, 32, 1, true] }), 
                     React.createElement('meshStandardMaterial', { color: '#333', side: 2 })
                 ),
+                // Bulb
+                React.createElement(
+                    'mesh',
+                    { position: [0, 1.2, -0.3], rotation: [1, 0, 0] },
+                    React.createElement('sphereGeometry', { args: [0.1] }),
+                    React.createElement('meshStandardMaterial', 
+                        {color: isNightMode ? '#ffaa00' : '#57575778' })
+                ),
                 // Light source (Bulb)
                 React.createElement(
                     'pointLight',
