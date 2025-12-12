@@ -10,14 +10,17 @@ export default function App() {
             text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things.",
             image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
             socials: [
-                { name: "GitHub", url: "https://github.com/pagarca" },
-                { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/" },
-                { name: "Email", url: "mailto:paugarrigues@gmail.com" }
+                { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
+                { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/", icon: "fa-brands fa-linkedin" },
+                { name: "Email", url: "mailto:paugarrigues@gmail.com", icon: "fa-solid fa-envelope" }
             ]
         },
         printer: {
             title: "3D Fabrication",
-            text: "From CAD to reality. I design complex mechanisms in Fusion 360 and bring them to life with FDM and SLA printing."
+            text: "From CAD to reality. I design complex mechanisms in Fusion 360 and bring them to life with FDM and SLA printing.",
+            socials: [
+                { name: "My Printables", url: "https://www.printables.com/@__Rasputin___253661", icon: "fa-solid fa-cube" }
+            ]
         },
         camera: {
             title: "Computer Vision Engineer",
@@ -58,7 +61,11 @@ export default function App() {
                             href: link.url, 
                             className: 'social-btn',
                             target: '_blank'
-                        }, link.name)
+                        }, 
+                        // Icon
+                        link.icon && React.createElement('i', { className: `${link.icon}`, style: { marginRight: '8px' } }),
+                        link.name
+                        )
                     )
                 ),
 

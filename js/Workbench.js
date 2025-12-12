@@ -65,6 +65,25 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 { position: [0, 0.8, 0.06] },
                 React.createElement('planeGeometry', { args: [2.8, 1.6] }), // Bigger (was 1.8, 1)
                 React.createElement('meshStandardMaterial', { color: '#00ff00', emissive: '#00ff00', emissiveIntensity: 0.5 })
+            ),
+            // Keyboard (Child of Monitor Group)
+            React.createElement(
+                'group',
+                { position: [0, -0.5, 0.7] }, // Relative to Monitor Group [0, 0.6, -1] -> Global [0, 0.1, -0.3]
+                // Chassis
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.02, 0] },
+                    React.createElement('boxGeometry', { args: [1.4, 0.05, 0.5] }),
+                    React.createElement('meshStandardMaterial', { color: '#2d3436' })
+                ),
+                // Keys Block
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.06, 0] },
+                    React.createElement('boxGeometry', { args: [1.3, 0.02, 0.4] }),
+                    React.createElement('meshStandardMaterial', { color: '#000000' })
+                )
             )
         ),
 
@@ -112,7 +131,7 @@ export default function Workbench({ onSectionSelect, ...props }) {
         // Camera (CV) - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'camera', position: [-2, 1, 0.5], rotation: [0, 0.5, 0] }, // Moved to -3
+            { id: 'camera', position: [-2.2, 0.5, -0.5], rotation: [0, 0.5, 0] }, // Moved to -3
             // Body
             React.createElement(
                 'mesh',
