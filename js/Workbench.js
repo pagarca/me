@@ -15,22 +15,31 @@ export default function Workbench({ onSectionSelect, isNightMode, onToggleLight,
     // Helper to make an object interactive
     const InteractiveObject = ({ id, children, onClick: customClick, onHoverChange, ...meshProps }) => {
         const [hovered, setHover] = useState(false);
+        const hoverTimeout = useRef();
+
+        const handlePointerEnter = (e) => {
+            e.stopPropagation();
+            if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+            setHover(true);
+            if (onHoverChange) onHoverChange(true);
+            document.body.style.cursor = 'pointer';
+        };
+
+        const handlePointerLeave = (e) => {
+            if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+            hoverTimeout.current = setTimeout(() => {
+                setHover(false);
+                if (onHoverChange) onHoverChange(false);
+                document.body.style.cursor = 'auto';
+            }, 60); // 60ms debounce to prevent flickering between children
+        };
 
         return React.createElement(
             'group',
             {
                 ...meshProps,
-                onPointerOver: (e) => { 
-                    e.stopPropagation(); 
-                    setHover(true); 
-                    if (onHoverChange) onHoverChange(true);
-                    document.body.style.cursor = 'pointer'; 
-                },
-                onPointerOut: (e) => { 
-                    setHover(false); 
-                    if (onHoverChange) onHoverChange(false);
-                    document.body.style.cursor = 'auto'; 
-                },
+                onPointerEnter: handlePointerEnter,
+                onPointerLeave: handlePointerLeave,
                 onClick: (e) => { 
                     e.stopPropagation(); 
                     if (customClick) customClick();

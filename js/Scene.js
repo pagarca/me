@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import Workbench from './Workbench.js';
 
-export default function Scene({ onSectionSelect, isNightMode, onToggleLight }) {
+const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
 
     return React.createElement(
@@ -61,3 +61,5 @@ export default function Scene({ onSectionSelect, isNightMode, onToggleLight }) {
         })
     );
 }
+
+export default React.memo(Scene);

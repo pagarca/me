@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Scene from './Scene.js';
 import { coffeeFacts } from './coffeeFacts.js';
 
@@ -13,11 +13,11 @@ export default function App() {
     const [loopNum, setLoopNum] = useState(0);
     const [typingSpeed, setTypingSpeed] = useState(150);
 
-    const toggleLight = () => setNightMode(!isNightMode);
+    const toggleLight = useCallback(() => setNightMode((prev) => !prev), []);
 
     // Typewriter Effect
     React.useEffect(() => {
-        const titles = ["Pau's Workbench"];
+        const titles = ["Pau's Workbench", "Computer Vision", "3D Printing", "Electronics"];
         const i = loopNum % titles.length;
         const fullText = titles[i];
 
@@ -41,7 +41,7 @@ export default function App() {
         return () => clearTimeout(timer);
     }, [text, isDeleting, loopNum]);
 
-    const handleSectionSelect = (id) => {
+    const handleSectionSelect = useCallback((id) => {
         if (id === 'coffee') {
             const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
             setDynamicContent({
@@ -53,7 +53,7 @@ export default function App() {
             setDynamicContent(null);
             setActiveSection(id);
         }
-    };
+    }, []);
 
     const content = {
         monitor: {
