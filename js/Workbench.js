@@ -4,7 +4,7 @@ export default function Workbench({ onSectionSelect, ...props }) {
     // Helper to make an object interactive
     const InteractiveObject = ({ id, children, ...meshProps }) => {
         const [hovered, setHover] = useState(false);
-        
+
         return React.createElement(
             'group',
             {
@@ -58,8 +58,8 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.5] }),
                 React.createElement('meshStandardMaterial', { color: '#222' })
             ),
-             // Screen Glow
-             React.createElement(
+            // Screen Glow
+            React.createElement(
                 'mesh',
                 { position: [0, 0.5, 0.06] },
                 React.createElement('planeGeometry', { args: [1.8, 1] }),
@@ -70,27 +70,50 @@ export default function Workbench({ onSectionSelect, ...props }) {
         // 3D Printer - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'printer', position: [2, 0.5, 0.5], rotation: [0, -0.5, 0] },
-            React.createElement(
-                'mesh',
-                { position: [0, 0.5, 0] },
-                React.createElement('boxGeometry', { args: [1.2, 1.2, 1.2] }),
-                React.createElement('meshStandardMaterial', { color: '#ddd', wireframe: true })
-            ),
+            { id: 'printer', position: [2, 0.2, 0.5], rotation: [0, -0.5, 0] },
+            // Bed (Base)
             React.createElement(
                 'mesh',
                 { position: [0, 0.1, 0] },
-                React.createElement('boxGeometry', { args: [1, 0.05, 1] }),
+                React.createElement('boxGeometry', { args: [1, 0.1, 1] }),
                 React.createElement('meshStandardMaterial', { color: '#222' })
+            ),
+            // Gantry Frame (Left Pillar)
+            React.createElement(
+                'mesh',
+                { position: [-0.4, 0.6, 0] },
+                React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
+                React.createElement('meshStandardMaterial', { color: '#333' })
+            ),
+             // Gantry Frame (Right Pillar)
+             React.createElement(
+                'mesh',
+                { position: [0.4, 0.6, 0] },
+                React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
+                React.createElement('meshStandardMaterial', { color: '#333' })
+            ),
+             // Gantry Frame (Top Bar)
+             React.createElement(
+                'mesh',
+                { position: [0, 1.1, 0] },
+                React.createElement('boxGeometry', { args: [1, 0.1, 0.1] }),
+                React.createElement('meshStandardMaterial', { color: '#333' })
+            ),
+            // Printed Object (Little Pyramid/Cone)
+            React.createElement(
+                'mesh',
+                { position: [0, 0.3, 0] },
+                React.createElement('coneGeometry', { args: [0.2, 0.4, 4] }), // A little pyramid
+                React.createElement('meshStandardMaterial', { color: '#00ffff' }) // Cyan color
             )
         ),
 
         // Camera (CV) - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'camera', position: [-2, 0.25, 0.5], rotation: [0, 0.5, 0] },
-             // Body
-             React.createElement(
+            { id: 'camera', position: [-2, 0.35, 0.5], rotation: [0, 0.5, 0] },
+            // Body
+            React.createElement(
                 'mesh',
                 { position: [0, 0, 0] },
                 React.createElement('boxGeometry', { args: [0.8, 0.5, 0.3] }),
@@ -99,16 +122,16 @@ export default function Workbench({ onSectionSelect, ...props }) {
             // Lens
             React.createElement(
                 'mesh',
-                { position: [0, 0, 0.2], rotation: [Math.PI/2, 0, 0] },
-                 React.createElement('cylinderGeometry', { args: [0.2, 0.2, 0.3] }),
-                 React.createElement('meshStandardMaterial', { color: '#111' })
+                { position: [0, 0, 0.2], rotation: [Math.PI / 2, 0, 0] },
+                React.createElement('cylinderGeometry', { args: [0.2, 0.2, 0.2] }),
+                React.createElement('meshStandardMaterial', { color: '#111' })
             ),
             // Lens Ring (Silver)
-             React.createElement(
+            React.createElement(
                 'mesh',
-                { position: [0, 0, 0.35], rotation: [Math.PI/2, 0, 0] },
-                 React.createElement('torusGeometry', { args: [0.2, 0.02, 16, 32] }),
-                 React.createElement('meshStandardMaterial', { color: '#silver' })
+                { position: [0, 0, 0.3], rotation: [0, 0, 0] },
+                React.createElement('torusGeometry', { args: [0.2, 0.02, 16, 32] }),
+                React.createElement('meshStandardMaterial', { color: '#silver' })
             )
         )
     );
