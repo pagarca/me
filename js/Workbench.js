@@ -85,21 +85,30 @@ export default function Workbench({ onSectionSelect, ...props }) {
             )
         ),
 
-        // Electronics - Interactive
+        // Camera (CV) - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'electronics', position: [-2, 0.15, 0.5], rotation: [0, 0.5, 0] },
+            { id: 'camera', position: [-2, 0.25, 0.5], rotation: [0, 0.5, 0] },
+             // Body
              React.createElement(
                 'mesh',
                 { position: [0, 0, 0] },
-                React.createElement('boxGeometry', { args: [0.8, 0.3, 0.6] }),
-                React.createElement('meshStandardMaterial', { color: '#3366cc' })
+                React.createElement('boxGeometry', { args: [0.8, 0.5, 0.3] }),
+                React.createElement('meshStandardMaterial', { color: '#222' })
             ),
+            // Lens
             React.createElement(
                 'mesh',
-                { position: [0.3, 0.3, 0], rotation: [0, 0, 0.5] },
-                 React.createElement('cylinderGeometry', { args: [0.05, 0.05, 0.6] }),
-                 React.createElement('meshStandardMaterial', { color: '#666' })
+                { position: [0, 0, 0.2], rotation: [Math.PI/2, 0, 0] },
+                 React.createElement('cylinderGeometry', { args: [0.2, 0.2, 0.3] }),
+                 React.createElement('meshStandardMaterial', { color: '#111' })
+            ),
+            // Lens Ring (Silver)
+             React.createElement(
+                'mesh',
+                { position: [0, 0, 0.35], rotation: [Math.PI/2, 0, 0] },
+                 React.createElement('torusGeometry', { args: [0.2, 0.02, 16, 32] }),
+                 React.createElement('meshStandardMaterial', { color: '#silver' })
             )
         )
     );

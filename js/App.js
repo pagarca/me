@@ -6,16 +6,16 @@ export default function App() {
 
     const content = {
         monitor: {
-            title: "Computer Vision Engineer",
-            text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
+            title: "About Me",
+            text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things."
         },
         printer: {
             title: "3D Fabrication",
             text: "From CAD to reality. I design complex mechanisms in Fusion 360 and bring them to life with FDM and SLA printing."
         },
-        electronics: {
-            title: "Electronics & IoT",
-            text: "Tinkering with PCBs, sensors, and microcontrollers. I love building connected devices and custom hardware solutions."
+        camera: {
+            title: "Computer Vision Engineer",
+            text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
         }
     };
 
