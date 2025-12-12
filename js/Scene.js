@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
 import Workbench from './Workbench.js';
 
-export default function Scene({ onSectionSelect }) {
+export default function Scene({ onSectionSelect, isNightMode, onToggleLight }) {
     return React.createElement(
         Canvas,
         {
@@ -16,15 +16,18 @@ export default function Scene({ onSectionSelect }) {
         // Controls
         React.createElement(OrbitControls, { target: [0, 0.5, 0], minPolarAngle: 0, maxPolarAngle: Math.PI / 2.2, enablePan: false }),
 
-        // Lights
-        React.createElement('ambientLight', { intensity: 0.5 }),
+        // Lights (Day/Night Logic)
+        React.createElement('ambientLight', { 
+            intensity: isNightMode ? 0.05 : 0.5, 
+            color: isNightMode ? '#001133' : '#ffffff' 
+        }),
         React.createElement('directionalLight', { 
             position: [5, 10, 5], 
-            intensity: 1, 
+            intensity: isNightMode ? 0.1 : 1, 
             castShadow: true 
         }),
         
-        // Environment
+        // Environment (City lights remain, but scene gets dark)
         React.createElement(Environment, { preset: 'city' }),
 
         // Floor
@@ -38,7 +41,9 @@ export default function Scene({ onSectionSelect }) {
         // Interactive Workbench
         React.createElement(Workbench, { 
             position: [0, -1, 0],
-            onSectionSelect: onSectionSelect
+            onSectionSelect: onSectionSelect,
+            isNightMode: isNightMode,
+            onToggleLight: onToggleLight
         })
     );
 }

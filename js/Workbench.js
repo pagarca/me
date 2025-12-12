@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Shape } from 'three';
 
-export default function Workbench({ onSectionSelect, ...props }) {
+export default function Workbench({ onSectionSelect, isNightMode, onToggleLight, ...props }) {
     // Helper to make an object interactive
-    const InteractiveObject = ({ id, children, ...meshProps }) => {
+    const InteractiveObject = ({ id, children, onClick: customClick, ...meshProps }) => {
         const [hovered, setHover] = useState(false);
 
         return React.createElement(
@@ -12,7 +12,11 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 ...meshProps,
                 onPointerOver: (e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = 'pointer'; },
                 onPointerOut: (e) => { setHover(false); document.body.style.cursor = 'auto'; },
-                onClick: (e) => { e.stopPropagation(); onSectionSelect(id); },
+                onClick: (e) => { 
+                    e.stopPropagation(); 
+                    if (customClick) customClick();
+                    else onSectionSelect(id); 
+                },
                 scale: hovered ? 1.05 : 1,
             },
             children
@@ -178,8 +182,8 @@ export default function Workbench({ onSectionSelect, ...props }) {
 
         // Coffee Cup (Essential)
         React.createElement(
-            'group',
-            { position: [-1, 0.1, 0.8] },
+            InteractiveObject,
+            { id: 'coffee', position: [-1, 0.1, 0.8] },
             // Cup Body
             React.createElement(
                 'mesh',
@@ -200,6 +204,67 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 { position: [-0.15, 0.15, 0], rotation: [0, 0, 0] },
                 React.createElement('torusGeometry', { args: [0.08, 0.02, 8, 16] }), // Full ring
                 React.createElement('meshStandardMaterial', { color: '#ffffff' })
+            )
+        ),
+
+        // Desk Lamp
+        React.createElement(
+            InteractiveObject,
+            { 
+                id: 'lamp', 
+                position: [2.5, 0.1, -1.0], 
+                rotation: [0, 2.2, 0], // Face towards monitor/keyboard
+                onClick: onToggleLight 
+            },
+            React.createElement(
+                'group',
+                { scale: [1.3, 1.3, 1.3] }, // 30% Bigger
+                // Base
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.05, 0] },
+                    React.createElement('cylinderGeometry', { args: [0.2, 0.25, 0.1] }),
+                    React.createElement('meshStandardMaterial', { color: '#333' })
+                ),
+                // Lower Arm
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.4, 0.15], rotation: [0.4, 0, 0] }, // Leaning back slightly
+                    React.createElement('cylinderGeometry', { args: [0.05, 0.05, 0.8] }),
+                    React.createElement('meshStandardMaterial', { color: '#444' })
+                ),
+                // Joint
+                React.createElement(
+                    'mesh',
+                    { position: [0, 0.75, 0.3] },
+                    React.createElement('sphereGeometry', { args: [0.08] }),
+                    React.createElement('meshStandardMaterial', { color: '#333' })
+                ),
+                // Upper Arm (Articulated)
+                React.createElement(
+                    'mesh',
+                    { position: [0, 1.0, 0.05], rotation: [-0.8, 0, 0] }, // Leaning forward
+                    React.createElement('cylinderGeometry', { args: [0.05, 0.05, 0.8] }),
+                    React.createElement('meshStandardMaterial', { color: '#444' })
+                ),
+                // Head (Bulb cover)
+                React.createElement(
+                    'mesh',
+                    { position: [0, 1.3, -0.3], rotation: [1, 0, 0] },
+                    React.createElement('coneGeometry', { args: [0.25, 0.5, 32, 1, true] }), 
+                    React.createElement('meshStandardMaterial', { color: '#333', side: 2 })
+                ),
+                // Light source (Bulb)
+                React.createElement(
+                    'pointLight',
+                    { 
+                        position: [0, 1.2, -0.3], 
+                        distance: 8,
+                        decay: 2,
+                        intensity: isNightMode ? 8 : 0, 
+                        color: '#ffaa00' 
+                    }
+                )
             )
         )
     );

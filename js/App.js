@@ -1,8 +1,27 @@
 import React, { useState } from 'react';
 import Scene from './Scene.js';
+import { coffeeFacts } from './coffeeFacts.js';
 
 export default function App() {
     const [activeSection, setActiveSection] = useState(null);
+    const [isNightMode, setNightMode] = useState(false);
+    const [dynamicContent, setDynamicContent] = useState(null);
+
+    const toggleLight = () => setNightMode(!isNightMode);
+
+    const handleSectionSelect = (id) => {
+        if (id === 'coffee') {
+            const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
+            setDynamicContent({
+                title: "Coffee Fact ☕",
+                text: randomFact
+            });
+            setActiveSection('coffee');
+        } else {
+            setDynamicContent(null);
+            setActiveSection(id);
+        }
+    };
 
     const content = {
         monitor: {
@@ -25,8 +44,13 @@ export default function App() {
         camera: {
             title: "Computer Vision Engineer",
             text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
-        }
+        },
+        // Fallback or specific static content for coffee can be empty since we use dynamicContent
+        coffee: {} 
     };
+
+    // Helper to get current content
+    const currentData = dynamicContent || content[activeSection];
 
     return React.createElement(
         React.Fragment,
@@ -39,23 +63,23 @@ export default function App() {
             React.createElement('p', null, "Select an object to explore"),
             
             // Dynamic Content Card
-            activeSection && React.createElement(
+            activeSection && currentData && React.createElement(
                 'div',
                 { className: 'info-card' },
                 // Optional Image
-                content[activeSection].image && React.createElement('img', { 
-                    src: content[activeSection].image, 
+                currentData.image && React.createElement('img', { 
+                    src: currentData.image, 
                     className: 'profile-img',
                     alt: 'Profile' 
                 }),
-                React.createElement('h2', null, content[activeSection].title),
-                React.createElement('p', null, content[activeSection].text),
+                React.createElement('h2', null, currentData.title),
+                React.createElement('p', null, currentData.text),
                 
                 // Optional Socials
-                content[activeSection].socials && React.createElement(
+                currentData.socials && React.createElement(
                     'div',
                     { className: 'social-links' },
-                    content[activeSection].socials.map(link => 
+                    currentData.socials.map(link => 
                         React.createElement('a', { 
                             key: link.name, 
                             href: link.url, 
@@ -77,6 +101,10 @@ export default function App() {
             )
         ),
         // 3D Scene with props
-        React.createElement(Scene, { onSectionSelect: setActiveSection })
+        React.createElement(Scene, { 
+            onSectionSelect: handleSectionSelect,
+            isNightMode: isNightMode,
+            onToggleLight: toggleLight
+        })
     );
 }
