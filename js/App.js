@@ -14,7 +14,7 @@ export default function App() {
             const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
             setDynamicContent({
                 title: "Coffee Fact ☕",
-                text: randomFact
+                text: "As a coffee lover, here is a random fact:" + randomFact
             });
             setActiveSection('coffee');
         } else {
@@ -46,7 +46,7 @@ export default function App() {
             text: "I specialize in teaching machines to 'see'. Experienced in object detection, segmentation, and real-time video processing using PyTorch and OpenCV."
         },
         // Fallback or specific static content for coffee can be empty since we use dynamicContent
-        coffee: {} 
+        coffee: {}
     };
 
     // Helper to get current content
@@ -61,47 +61,47 @@ export default function App() {
             { className: 'overlay' },
             React.createElement('h1', null, "Pau's Workbench"),
             React.createElement('p', null, "Select an object to explore"),
-            
+
             // Dynamic Content Card
             activeSection && currentData && React.createElement(
                 'div',
                 { className: 'info-card' },
                 // Optional Image
-                currentData.image && React.createElement('img', { 
-                    src: currentData.image, 
+                currentData.image && React.createElement('img', {
+                    src: currentData.image,
                     className: 'profile-img',
-                    alt: 'Profile' 
+                    alt: 'Profile'
                 }),
                 React.createElement('h2', null, currentData.title),
                 React.createElement('p', null, currentData.text),
-                
+
                 // Optional Socials
                 currentData.socials && React.createElement(
                     'div',
                     { className: 'social-links' },
-                    currentData.socials.map(link => 
-                        React.createElement('a', { 
-                            key: link.name, 
-                            href: link.url, 
+                    currentData.socials.map(link =>
+                        React.createElement('a', {
+                            key: link.name,
+                            href: link.url,
                             className: 'social-btn',
                             target: '_blank'
-                        }, 
-                        // Icon
-                        link.icon && React.createElement('i', { className: `${link.icon}`, style: { marginRight: '8px' } }),
-                        link.name
+                        },
+                            // Icon
+                            link.icon && React.createElement('i', { className: `${link.icon}`, style: { marginRight: '8px' } }),
+                            link.name
                         )
                     )
                 ),
 
                 React.createElement(
-                    'button', 
-                    { onClick: () => setActiveSection(null), style: { marginTop: '1rem', cursor: 'pointer' } }, 
+                    'button',
+                    { onClick: () => setActiveSection(null), style: { marginTop: '1rem', cursor: 'pointer' } },
                     "Close"
                 )
             )
         ),
         // 3D Scene with props
-        React.createElement(Scene, { 
+        React.createElement(Scene, {
             onSectionSelect: handleSectionSelect,
             isNightMode: isNightMode,
             onToggleLight: toggleLight
