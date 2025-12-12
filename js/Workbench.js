@@ -48,8 +48,8 @@ export default function Workbench({ onSectionSelect, ...props }) {
             // Screen
             React.createElement(
                 'mesh',
-                { position: [0, 0.5, 0] },
-                React.createElement('boxGeometry', { args: [2, 1.2, 0.1] }),
+                { position: [0, 0.8, 0] },
+                React.createElement('boxGeometry', { args: [3, 1.8, 0.1] }), // Bigger (was 2, 1.2)
                 React.createElement('meshStandardMaterial', { color: '#111' })
             ),
             // Stand
@@ -62,8 +62,8 @@ export default function Workbench({ onSectionSelect, ...props }) {
             // Screen Glow
             React.createElement(
                 'mesh',
-                { position: [0, 0.5, 0.06] },
-                React.createElement('planeGeometry', { args: [1.8, 1] }),
+                { position: [0, 0.8, 0.06] },
+                React.createElement('planeGeometry', { args: [2.8, 1.6] }), // Bigger (was 1.8, 1)
                 React.createElement('meshStandardMaterial', { color: '#00ff00', emissive: '#00ff00', emissiveIntensity: 0.5 })
             )
         ),
@@ -86,15 +86,15 @@ export default function Workbench({ onSectionSelect, ...props }) {
                 React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
                 React.createElement('meshStandardMaterial', { color: '#333' })
             ),
-             // Gantry Frame (Right Pillar)
-             React.createElement(
+            // Gantry Frame (Right Pillar)
+            React.createElement(
                 'mesh',
                 { position: [0.4, 0.6, 0] },
                 React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
                 React.createElement('meshStandardMaterial', { color: '#333' })
             ),
-             // Gantry Frame (Top Bar)
-             React.createElement(
+            // Gantry Frame (Top Bar)
+            React.createElement(
                 'mesh',
                 { position: [0, 1.1, 0] },
                 React.createElement('boxGeometry', { args: [1, 0.1, 0.1] }),
@@ -112,7 +112,7 @@ export default function Workbench({ onSectionSelect, ...props }) {
         // Camera (CV) - Interactive
         React.createElement(
             InteractiveObject,
-            { id: 'camera', position: [-2, 0.35, 0.5], rotation: [0, 0.5, 0] },
+            { id: 'camera', position: [-2, 1, 0.5], rotation: [0, 0.5, 0] }, // Moved to -3
             // Body
             React.createElement(
                 'mesh',
@@ -145,16 +145,43 @@ export default function Workbench({ onSectionSelect, ...props }) {
                     s.lineTo(-0.15, 0);
                     return s;
                 }, []);
-                
+
                 const extrudeSettings = { depth: 0.3, bevelEnabled: false };
-                
+
                 return React.createElement(
                     'mesh',
-                    { position: [0, 0.25, -0.15], rotation: [0, 0, 0] }, // Centered on top (y=0.25 is top of body), moved back by half depth
+                    { position: [0, 0.25, -0.15], rotation: [0, 0, 0] },
                     React.createElement('extrudeGeometry', { args: [shape, extrudeSettings] }),
                     React.createElement('meshStandardMaterial', { color: '#181818' })
                 );
             })()
+        ),
+
+        // Coffee Cup (Essential)
+        React.createElement(
+            'group',
+            { position: [-1, 0.1, 0.8] },
+            // Cup Body
+            React.createElement(
+                'mesh',
+                { position: [0, 0.15, 0] },
+                React.createElement('cylinderGeometry', { args: [0.15, 0.12, 0.3] }),
+                React.createElement('meshStandardMaterial', { color: '#ffffff' })
+            ),
+            // Coffee Liquid
+            React.createElement(
+                'mesh',
+                { position: [0, 0.28, 0], rotation: [-Math.PI / 2, 0, 0] },
+                React.createElement('circleGeometry', { args: [0.13] }),
+                React.createElement('meshStandardMaterial', { color: '#3e2723' }) // Dark Coffee
+            ),
+            // Handle
+            React.createElement(
+                'mesh',
+                { position: [-0.15, 0.15, 0], rotation: [0, 0, 0] },
+                React.createElement('torusGeometry', { args: [0.08, 0.02, 8, 16] }), // Full ring
+                React.createElement('meshStandardMaterial', { color: '#ffffff' })
+            )
         )
     );
 }

@@ -7,7 +7,13 @@ export default function App() {
     const content = {
         monitor: {
             title: "About Me",
-            text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things."
+            text: "I'm an engineer working on Computer Vision, but I also love 3D modelling, CAD, and 3D printing. I enjoy tinkering with electronics and making cool things.",
+            image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
+            socials: [
+                { name: "GitHub", url: "https://github.com/pagarca" },
+                { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/" },
+                { name: "Email", url: "mailto:paugarrigues@gmail.com" }
+            ]
         },
         printer: {
             title: "3D Fabrication",
@@ -33,8 +39,29 @@ export default function App() {
             activeSection && React.createElement(
                 'div',
                 { className: 'info-card' },
+                // Optional Image
+                content[activeSection].image && React.createElement('img', { 
+                    src: content[activeSection].image, 
+                    className: 'profile-img',
+                    alt: 'Profile' 
+                }),
                 React.createElement('h2', null, content[activeSection].title),
                 React.createElement('p', null, content[activeSection].text),
+                
+                // Optional Socials
+                content[activeSection].socials && React.createElement(
+                    'div',
+                    { className: 'social-links' },
+                    content[activeSection].socials.map(link => 
+                        React.createElement('a', { 
+                            key: link.name, 
+                            href: link.url, 
+                            className: 'social-btn',
+                            target: '_blank'
+                        }, link.name)
+                    )
+                ),
+
                 React.createElement(
                     'button', 
                     { onClick: () => setActiveSection(null), style: { marginTop: '1rem', cursor: 'pointer' } }, 

@@ -52,6 +52,38 @@ p {
     color: #4cd137;
 }
 
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    display: block;
+    border: 3px solid #4cd137;
+    object-fit: cover;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 1rem 0;
+}
+
+.social-btn {
+    text-decoration: none;
+    color: white;
+    background: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.social-btn:hover {
+    background: #555;
+    color: #4cd137;
+}
+
 .info-card button {
     background: white;
     color: black;
