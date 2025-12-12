@@ -19,7 +19,14 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         React.createElement(PerspectiveCamera, { makeDefault: true, position: [0, 4, 8], fov: 45 }),
         
         // Controls
-        React.createElement(OrbitControls, { target: [0, 0.5, 0], minPolarAngle: 0, maxPolarAngle: Math.PI / 2.2, enablePan: false }),
+        React.createElement(OrbitControls, { 
+            target: [0, 0.5, 0], 
+            minPolarAngle: 0, 
+            maxPolarAngle: Math.PI / 2.2, 
+            enablePan: false,
+            minDistance: 3,
+            maxDistance: 15
+        }),
 
         // Lights (Day/Night Logic)
         React.createElement('ambientLight', { 
