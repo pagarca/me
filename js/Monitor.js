@@ -15,7 +15,7 @@ const CVScreen = () => {
             position: [0, 0, 1],
             distance: 3,
             decay: 2,
-            intensity: 2,
+            intensity: 10,
             color: greenColor
         }),
 
@@ -149,7 +149,7 @@ const GhostMouse = ({ active }) => {
             'mesh',
             { 
                 ref: mouseBodyRef,
-                position: [0, 0.08, 0], 
+                position: [0, 0.05, 0], 
                 rotation: [0, -0.2, 0], 
                 castShadow: true 
             },
