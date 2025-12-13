@@ -1,6 +1,21 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Shape } from 'three';
 import InteractiveObject from 'interactive_object';
+
+// Create the viewfinder shape outside the component to avoid hook issues
+const createViewfinderShape = () => {
+    const s = new Shape();
+    s.moveTo(-0.15, 0);
+    s.lineTo(0.15, 0);
+    s.lineTo(0.1, 0.15);
+    s.lineTo(-0.1, 0.15);
+    s.lineTo(-0.15, 0);
+    return s;
+};
+
+// Create the shape once at module level
+const viewfinderShape = createViewfinderShape();
+const extrudeSettings = { depth: 0.3, bevelEnabled: false };
 
 const Camera = ({ onSectionSelect }) => React.createElement(
     InteractiveObject,
@@ -27,24 +42,12 @@ const Camera = ({ onSectionSelect }) => React.createElement(
         React.createElement('meshStandardMaterial', { color: '#C0C0C0' })
     ),
     // Viewfinder
-    (() => {
-        const shape = useMemo(() => {
-            const s = new Shape();
-            s.moveTo(-0.15, 0);
-            s.lineTo(0.15, 0);
-            s.lineTo(0.1, 0.15);
-            s.lineTo(-0.1, 0.15);
-            s.lineTo(-0.15, 0);
-            return s;
-        }, []);
-        const extrudeSettings = { depth: 0.3, bevelEnabled: false };
-        return React.createElement(
-            'mesh',
-            { position: [0, 0.25, -0.15], rotation: [0, 0, 0] },
-            React.createElement('extrudeGeometry', { args: [shape, extrudeSettings] }),
-            React.createElement('meshStandardMaterial', { color: '#181818' })
-        );
-    })()
+    React.createElement(
+        'mesh',
+        { position: [0, 0.25, -0.15], rotation: [0, 0, 0] },
+        React.createElement('extrudeGeometry', { args: [viewfinderShape, extrudeSettings] }),
+        React.createElement('meshStandardMaterial', { color: '#181818' })
+    )
 );
 
 export default Camera;
