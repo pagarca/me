@@ -34,13 +34,15 @@ const LampHalo = ({ isNightMode }) => {
     );
 };
 
-const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
+const DeskLamp = ({ isNightMode, onToggleLight, wobble, onHover }) => React.createElement(
     InteractiveObject,
     {
         id: 'lamp',
         position: [2.5, 0.1, -1.0],
         rotation: [0, 2.2, 0],
-        onClick: onToggleLight
+        onClick: onToggleLight,
+        wobble,
+        onHoverChange: onHover
     },
     React.createElement(
         'group',

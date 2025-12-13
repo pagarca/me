@@ -4,15 +4,7 @@ import { OrbitControls, PerspectiveCamera, ContactShadows, Environment } from '@
 import Workbench from 'workbench';
 
 
-const ResponsiveCamera = () => {
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
-
-    React.useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
+const ResponsiveCamera = ({ isMobile }) => {
     const position = isMobile ? [0, 6, 12] : [0, 4, 8];
     const fov = isMobile ? 55 : 45;
 
@@ -65,8 +57,15 @@ const Dust = ({ count = 300 }) => {
     );
 };
 
-const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
+const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return React.createElement(
         Canvas,
@@ -82,7 +81,7 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         React.createElement(Dust, { count: 400 }),
 
         // Camera
-        React.createElement(ResponsiveCamera, null),
+        React.createElement(ResponsiveCamera, { isMobile }),
 
         // Controls
         React.createElement(OrbitControls, {
@@ -139,8 +138,10 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         React.createElement(Workbench, {
             position: [0, -1, 0],
             onSectionSelect: onSectionSelect,
+            activeSection: activeSection,
             isNightMode: isNightMode,
-            onToggleLight: onToggleLight
+            onToggleLight: onToggleLight,
+            isMobile: isMobile
         })
     );
 }

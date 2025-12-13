@@ -2,14 +2,20 @@ import React, { useState, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import InteractiveObject from 'interactive_object';
 
-const Printer = ({ onSectionSelect }) => {
+const Printer = ({ onSectionSelect, wobble, onHover }) => {
     const printHeadRef = useRef();
     const [printerHovered, setPrinterHovered] = useState(false);
 
+    const handleHover = (val) => {
+        setPrinterHovered(val);
+        if (onHover) onHover(val);
+    };
+
     const progress = useRef(0);
+    const active = printerHovered || wobble;
 
     useFrame((state, delta) => {
-        if (printerHovered && printHeadRef.current) {
+        if (active && printHeadRef.current) {
             progress.current += delta * 8;
             printHeadRef.current.position.x = Math.sin(progress.current) * 0.25;
         }
@@ -22,7 +28,8 @@ const Printer = ({ onSectionSelect }) => {
             onSectionSelect,
             position: [2.1, 0.1, 0.75],
             rotation: [0, -0.5, 0],
-            onHoverChange: setPrinterHovered
+            onHoverChange: handleHover,
+            wobble
         },
         // Bed (Base)
         React.createElement(

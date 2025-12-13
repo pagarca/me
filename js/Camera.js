@@ -17,9 +17,9 @@ const createViewfinderShape = () => {
 const viewfinderShape = createViewfinderShape();
 const extrudeSettings = { depth: 0.3, bevelEnabled: false };
 
-const Camera = ({ onSectionSelect }) => React.createElement(
+const Camera = ({ onSectionSelect, wobble, onHover }) => React.createElement(
     InteractiveObject,
-    { id: 'camera', onSectionSelect, position: [-2.2, 0.5, -0.5], rotation: [0, 0.5, 0] },
+    { id: 'camera', onSectionSelect, position: [-2.2, 0.5, -0.5], rotation: [0, 0.5, 0], wobble, onHoverChange: onHover },
     // Body
     React.createElement(
         'mesh',

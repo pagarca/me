@@ -48,8 +48,13 @@ const Steam = () => {
     );
 };
 
-const CoffeeCup = ({ onSectionSelect }) => {
+const CoffeeCup = ({ onSectionSelect, wobble, onHover }) => {
     const [hovered, setHovered] = useState(false);
+
+    const handleHover = (val) => {
+        setHovered(val);
+        if (onHover) onHover(val);
+    };
 
     return React.createElement(
         InteractiveObject,
@@ -57,7 +62,8 @@ const CoffeeCup = ({ onSectionSelect }) => {
             id: 'coffee', 
             onSectionSelect, 
             position: [-1.2, 0.1, 0.8],
-            onHoverChange: setHovered 
+            onHoverChange: handleHover,
+            wobble
         },
         // Cup Body
         React.createElement(
@@ -88,7 +94,7 @@ const CoffeeCup = ({ onSectionSelect }) => {
             React.createElement('meshStandardMaterial', { color: '#ffffff' })
         ),
         // Steam (Conditional)
-        hovered && React.createElement(Steam, null)
+        (hovered || wobble) && React.createElement(Steam, null)
     );
 };
 

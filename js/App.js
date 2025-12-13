@@ -153,6 +153,7 @@ export default function App() {
         // 3D Scene with props
         React.createElement(Scene, {
             onSectionSelect: handleSectionSelect,
+            activeSection: activeSection,
             isNightMode: isNightMode,
             onToggleLight: toggleLight
         })

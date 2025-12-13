@@ -159,8 +159,13 @@ const GhostMouse = ({ active }) => {
     );
 };
 
-const Monitor = ({ onSectionSelect }) => {
+const Monitor = ({ onSectionSelect, wobble, onHover }) => {
     const [hovered, setHovered] = useState(false);
+    
+    const handleHover = (val) => {
+        setHovered(val);
+        if (onHover) onHover(val);
+    };
 
     return React.createElement(
         InteractiveObject,
@@ -168,7 +173,8 @@ const Monitor = ({ onSectionSelect }) => {
             id: 'monitor', 
             onSectionSelect, 
             position: [0, 0.6, -1],
-            onHoverChange: setHovered
+            onHoverChange: handleHover,
+            wobble
         },
         // Screen
         React.createElement(
@@ -206,7 +212,7 @@ const Monitor = ({ onSectionSelect }) => {
             )
         ),
         // Mouse (Animated Ghost User)
-        React.createElement(GhostMouse, { active: hovered })
+        React.createElement(GhostMouse, { active: hovered || wobble })
     );
 };
 
