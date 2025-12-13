@@ -68,7 +68,7 @@ const Printer = ({ onSectionSelect }) => {
                 'mesh',
                 { position: [0, -0.03, 0] },
                 React.createElement('cylinderGeometry', { args: [0.01, 0.005, 0.02] }),
-                React.createElement('meshStandardMaterial', { color: '#ffff00ff' })
+                React.createElement('meshStandardMaterial', { color: '#ffff00' })
             )
         ),
         // Printed Object (Little Pyramid/Cone)

@@ -24,7 +24,7 @@ const Camera = ({ onSectionSelect }) => React.createElement(
         'mesh',
         { position: [0, 0, 0.3], rotation: [0, 0, 0] },
         React.createElement('torusGeometry', { args: [0.2, 0.02, 16, 32] }),
-        React.createElement('meshStandardMaterial', { color: '#silver' })
+        React.createElement('meshStandardMaterial', { color: '#C0C0C0' })
     ),
     // Viewfinder
     (() => {
