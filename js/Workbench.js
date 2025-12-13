@@ -282,10 +282,15 @@ const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
         // Bulb
         React.createElement(
             'mesh',
-            { position: [0, 1.2, -0.3], rotation: [1, 0, 0] },
+            { position: [0, 1.3, -0.3], rotation: [1, 0, 0] },
             React.createElement('sphereGeometry', { args: [0.1] }),
-            React.createElement('meshStandardMaterial', 
-                {color: isNightMode ? '#ffaa00' : '#57575778' })
+            React.createElement('meshStandardMaterial', {
+                color: isNightMode ? '#ffaa00' : '#2a2a2a',
+                emissive: isNightMode ? '#ffaa00' : '#000000',
+                emissiveIntensity: isNightMode ? 2 : 0,
+                roughness: 0.1,
+                metalness: 0.1
+            })
         ),
         // Light source
         React.createElement(

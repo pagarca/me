@@ -3,6 +3,22 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import Workbench from './Workbench.js';
 
+
+const ResponsiveCamera = () => {
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const position = isMobile ? [0, 6, 12] : [0, 4, 8];
+    const fov = isMobile ? 55 : 45;
+
+    return React.createElement(PerspectiveCamera, { makeDefault: true, position: position, fov: fov });
+};
+
 const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
 
@@ -17,7 +33,7 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
 
         // Camera
-        React.createElement(PerspectiveCamera, { makeDefault: true, position: [0, 4, 8], fov: 45 }),
+        React.createElement(ResponsiveCamera, null),
         
         // Controls
         React.createElement(OrbitControls, { 

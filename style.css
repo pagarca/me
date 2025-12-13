@@ -134,6 +134,7 @@ p {
     margin-left: 2px;
 }
 
+
 /* scanlines */
 body::after {
     content: " ";
@@ -147,4 +148,36 @@ body::after {
     z-index: 2;
     background-size: 100% 2px, 3px 100%;
     pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .overlay {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+        width: auto;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        white-space: nowrap;
+    }
+
+    p {
+        font-size: 1.1rem;
+    }
+
+    .info-card {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .info-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .social-links {
+        flex-wrap: wrap;
+    }
 }
