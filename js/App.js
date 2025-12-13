@@ -44,7 +44,7 @@ export default function App() {
 
     // Typewriter Effect
     React.useEffect(() => {
-        const titles = ["Pau's Workbench", "Computer Vision", "3D Printing", "Electronics"];
+        const titles = ["Pau's Workbench"];
         const i = loopNum % titles.length;
         const fullText = titles[i];
 
