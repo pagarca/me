@@ -31,10 +31,10 @@ const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick
             ...meshProps,
             onPointerEnter: handlePointerEnter,
             onPointerLeave: handlePointerLeave,
-            onClick: (e) => { 
-                e.stopPropagation(); 
+            onClick: (e) => {
+                e.stopPropagation();
                 if (customClick) customClick();
-                else if (onSectionSelect) onSectionSelect(id); 
+                else if (onSectionSelect) onSectionSelect(id);
             },
             scale: hovered ? 1.05 : 1,
         },
@@ -49,7 +49,7 @@ const CVScreen = () => {
     return React.createElement(
         'group',
         { position: [0, 0.8, 0.07] }, // Slightly in front of screen
-        
+
         // CRT Global Light (Projects glow onto desk/keyboard)
         React.createElement('pointLight', {
             position: [0, 0, 1],
@@ -64,9 +64,9 @@ const CVScreen = () => {
             'mesh',
             { position: [0, 0, -0.01] },
             React.createElement('planeGeometry', { args: [2.8, 1.6] }),
-            React.createElement('meshStandardMaterial', { 
-                color: '#001a00', 
-                emissive: '#002200', 
+            React.createElement('meshStandardMaterial', {
+                color: '#001a00',
+                emissive: '#002200',
                 emissiveIntensity: 0.2
             })
         ),
@@ -80,22 +80,22 @@ const CVScreen = () => {
                 'mesh',
                 { position: [0, 0.3, 0.01] },
                 React.createElement('planeGeometry', { args: [0.6, 0.6] }),
-                React.createElement('meshStandardMaterial', { 
-                    color: greenColor, 
-                    emissive: greenColor, 
-                    emissiveIntensity: glow 
+                React.createElement('meshStandardMaterial', {
+                    color: greenColor,
+                    emissive: greenColor,
+                    emissiveIntensity: glow
                 })
             ),
             // Lines below photo
-            Array.from({ length: 3 }).map((_, i) => 
+            Array.from({ length: 3 }).map((_, i) =>
                 React.createElement(
                     'mesh',
                     { key: `l-left-${i}`, position: [0, -0.2 - (i * 0.15), 0.01] },
                     React.createElement('planeGeometry', { args: [0.6, 0.05] }),
-                    React.createElement('meshStandardMaterial', { 
-                        color: greenColor, 
-                        emissive: greenColor, 
-                        emissiveIntensity: glow 
+                    React.createElement('meshStandardMaterial', {
+                        color: greenColor,
+                        emissive: greenColor,
+                        emissiveIntensity: glow
                     })
                 )
             )
@@ -110,14 +110,14 @@ const CVScreen = () => {
                 'mesh',
                 { position: [0, 0.55, 0.01] },
                 React.createElement('planeGeometry', { args: [1.4, 0.1] }),
-                React.createElement('meshStandardMaterial', { 
-                    color: greenColor, 
-                    emissive: greenColor, 
-                    emissiveIntensity: glow 
+                React.createElement('meshStandardMaterial', {
+                    color: greenColor,
+                    emissive: greenColor,
+                    emissiveIntensity: glow
                 })
             ),
             // Body Text simulation (Two columns of small lines)
-            Array.from({ length: 6 }).map((_, i) => 
+            Array.from({ length: 6 }).map((_, i) =>
                 React.createElement(
                     'group',
                     { key: `l-right-${i}`, position: [0, 0.3 - (i * 0.15), 0] },
@@ -126,10 +126,10 @@ const CVScreen = () => {
                         'mesh',
                         { position: [-0.36, 0, 0.01] },
                         React.createElement('planeGeometry', { args: [0.65, 0.03] }),
-                        React.createElement('meshStandardMaterial', { 
-                            color: greenColor, 
-                            emissive: greenColor, 
-                            emissiveIntensity: glow 
+                        React.createElement('meshStandardMaterial', {
+                            color: greenColor,
+                            emissive: greenColor,
+                            emissiveIntensity: glow
                         })
                     ),
                     // Col 2
@@ -137,10 +137,10 @@ const CVScreen = () => {
                         'mesh',
                         { position: [0.36, 0, 0.01] },
                         React.createElement('planeGeometry', { args: [0.65, 0.03] }),
-                        React.createElement('meshStandardMaterial', { 
-                            color: greenColor, 
-                            emissive: greenColor, 
-                            emissiveIntensity: glow 
+                        React.createElement('meshStandardMaterial', {
+                            color: greenColor,
+                            emissive: greenColor,
+                            emissiveIntensity: glow
                         })
                     )
                 )
@@ -171,7 +171,7 @@ const Monitor = ({ onSectionSelect }) => React.createElement(
     // Keyboard
     React.createElement(
         'group',
-        { position: [0, -0.5, 0.7] },
+        { position: [-0.20, -0.5, 0.7], rotation: [0, 0.1, 0] },
         // Chassis
         React.createElement(
             'mesh',
@@ -185,6 +185,25 @@ const Monitor = ({ onSectionSelect }) => React.createElement(
             { position: [0, 0.06, 0] },
             React.createElement('boxGeometry', { args: [1.3, 0.02, 0.4] }),
             React.createElement('meshStandardMaterial', { color: '#000000' })
+        )
+    ),
+    // Mouse (Grouped with Monitor)
+    React.createElement(
+        'group',
+        { position: [1.1, -0.5, 0.8] }, // Relative to Monitor [0, 0.6, -1] -> World [1.1, 0.1, -0.2]
+        // Mousepad
+        React.createElement(
+            'mesh',
+            { position: [0, 0, 0], rotation: [0, -0.3, 0], receiveShadow: true },
+            React.createElement('boxGeometry', { args: [0.7, 0.05, 0.75] }),
+            React.createElement('meshStandardMaterial', { color: '#222' })
+        ),
+        // Mouse Body
+        React.createElement(
+            'mesh',
+            { position: [0, 0.08, 0], rotation: [0, -0.2, 0], castShadow: true },
+            React.createElement('boxGeometry', { args: [0.15, 0.08, 0.25] }),
+            React.createElement('meshStandardMaterial', { color: '#2d3436' })
         )
     )
 );
@@ -201,12 +220,12 @@ const Printer = ({ onSectionSelect }) => {
 
     return React.createElement(
         InteractiveObject,
-        { 
-            id: 'printer', 
+        {
+            id: 'printer',
             onSectionSelect,
-            position: [2, 0.2, 0.5], 
+            position: [2.1, 0.2, 0.8],
             rotation: [0, -0.5, 0],
-            onHoverChange: setPrinterHovered 
+            onHoverChange: setPrinterHovered
         },
         // Bed (Base)
         React.createElement(
@@ -310,31 +329,95 @@ const Camera = ({ onSectionSelect }) => React.createElement(
     })()
 );
 
-const CoffeeCup = ({ onSectionSelect }) => React.createElement(
-    InteractiveObject,
-    { id: 'coffee', onSectionSelect, position: [-1, 0.1, 0.8] },
-    // Cup Body
-    React.createElement(
-        'mesh',
-        { position: [0, 0.15, 0] },
-        React.createElement('cylinderGeometry', { args: [0.15, 0.12, 0.3] }),
-        React.createElement('meshStandardMaterial', { color: '#ffffff' })
-    ),
-    // Coffee Liquid
-    React.createElement(
-        'mesh',
-        { position: [0, 0.28, 0], rotation: [-Math.PI / 2, 0, 0] },
-        React.createElement('circleGeometry', { args: [0.13] }),
-        React.createElement('meshStandardMaterial', { color: '#3e2723' })
-    ),
-    // Handle
-    React.createElement(
-        'mesh',
-        { position: [-0.15, 0.15, 0], rotation: [0, 0, 0] },
-        React.createElement('torusGeometry', { args: [0.08, 0.02, 8, 16] }),
-        React.createElement('meshStandardMaterial', { color: '#ffffff' })
-    )
-);
+const Steam = () => {
+    const steamRef = useRef();
+    // Create random start offsets for particles
+    const particles = useMemo(() => Array.from({ length: 3 }).map(() => ({
+        offset: Math.random() * 10,
+        speed: 0.5 + Math.random() * 0.5,
+        x: (Math.random() - 0.5) * 0.1,
+        z: (Math.random() - 0.5) * 0.1
+    })), []);
+
+    useFrame((state) => {
+        if (!steamRef.current) return;
+        steamRef.current.children.forEach((child, i) => {
+            const data = particles[i];
+            // Cycle rising animation based on time + offset
+            const time = state.clock.elapsedTime * data.speed + data.offset;
+            const y = (time % 1.5) * 0.4; // Rise up to 0.6 units
+            const opacity = 1 - (y / 0.6); // Fade out as it rises
+            
+            child.position.y = y;
+            child.position.x = data.x + Math.sin(time * 2) * 0.05; // Wiggle
+            child.position.z = data.z + Math.cos(time * 1.5) * 0.05;
+            child.scale.setScalar(0.1 + y * 0.2); // Grow slightly
+            child.material.opacity = Math.max(0, opacity * 0.4);
+        });
+    });
+
+    return React.createElement(
+        'group',
+        { ref: steamRef, position: [0, 0.25, 0] },
+        particles.map((_, i) => 
+            React.createElement(
+                'mesh',
+                { key: i },
+                React.createElement('sphereGeometry', { args: [0.1, 8, 8] }),
+                React.createElement('meshStandardMaterial', { 
+                    color: '#ffffff', 
+                    transparent: true, 
+                    opacity: 0.4,
+                    depthWrite: false
+                })
+            )
+        )
+    );
+};
+
+const CoffeeCup = ({ onSectionSelect }) => {
+    const [hovered, setHovered] = useState(false);
+
+    return React.createElement(
+        InteractiveObject,
+        { 
+            id: 'coffee', 
+            onSectionSelect, 
+            position: [-1.2, 0.1, 0.8],
+            onHoverChange: setHovered 
+        },
+        // Cup Body
+        React.createElement(
+            'mesh',
+            { position: [0, 0.15, 0] },
+            React.createElement('cylinderGeometry', { args: [0.15, 0.12, 0.3, 32, 1, true] }), // Hollow
+            React.createElement('meshStandardMaterial', { color: '#ffffff', side: 2 }) // DoubleSide
+        ),
+        // Cup Bottom
+        React.createElement(
+            'mesh',
+            { position: [0, 0.01, 0], rotation: [-Math.PI / 2, 0, 0] },
+            React.createElement('circleGeometry', { args: [0.12, 32] }),
+            React.createElement('meshStandardMaterial', { color: '#ffffff' })
+        ),
+        // Coffee Liquid
+        React.createElement(
+            'mesh',
+            { position: [0, 0.25, 0], rotation: [-Math.PI / 2, 0, 0] }, // Lowered slightly
+            React.createElement('circleGeometry', { args: [0.13, 32] }),
+            React.createElement('meshStandardMaterial', { color: '#3e2723' })
+        ),
+        // Handle
+        React.createElement(
+            'mesh',
+            { position: [-0.15, 0.15, 0], rotation: [0, 0, 0] },
+            React.createElement('torusGeometry', { args: [0.08, 0.02, 8, 16] }),
+            React.createElement('meshStandardMaterial', { color: '#ffffff' })
+        ),
+        // Steam (Conditional)
+        hovered && React.createElement(Steam, null)
+    );
+};
 
 const LampHalo = ({ isNightMode }) => {
     // Generate Halo Texture
@@ -358,23 +441,23 @@ const LampHalo = ({ isNightMode }) => {
     return React.createElement(
         'sprite',
         { position: [0, 1.3, -0.3], scale: [0.35, 0.35, 0.35] },
-        React.createElement('spriteMaterial', { 
-            map: texture, 
-            transparent: true, 
+        React.createElement('spriteMaterial', {
+            map: texture,
+            transparent: true,
             opacity: 0.8,
-            depthWrite: false, 
-            blending: THREE.AdditiveBlending 
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
         })
     );
 };
 
 const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
     InteractiveObject,
-    { 
-        id: 'lamp', 
-        position: [2.5, 0.1, -1.0], 
+    {
+        id: 'lamp',
+        position: [2.5, 0.1, -1.0],
         rotation: [0, 2.2, 0],
-        onClick: onToggleLight 
+        onClick: onToggleLight
     },
     React.createElement(
         'group',
@@ -411,7 +494,7 @@ const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
         React.createElement(
             'mesh',
             { position: [0, 1.3, -0.3], rotation: [1, 0, 0] },
-            React.createElement('coneGeometry', { args: [0.25, 0.5, 32, 1, true] }), 
+            React.createElement('coneGeometry', { args: [0.25, 0.5, 32, 1, true] }),
             React.createElement('meshStandardMaterial', { color: '#333', side: 2 })
         ),
         // Bulb
@@ -432,16 +515,18 @@ const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
         // Light source
         React.createElement(
             'pointLight',
-            { 
-                position: [0, 1.2, -0.3], 
+            {
+                position: [0, 1.2, -0.3],
                 distance: 8,
                 decay: 2,
-                intensity: isNightMode ? 8 : 0, 
-                color: '#ffaa00' 
+                intensity: isNightMode ? 8 : 0,
+                color: '#ffaa00'
             }
         )
     )
 );
+
+
 
 export default function Workbench({ onSectionSelect, isNightMode, onToggleLight, ...props }) {
     return React.createElement(
@@ -470,7 +555,8 @@ export default function Workbench({ onSectionSelect, isNightMode, onToggleLight,
         React.createElement(Printer, { onSectionSelect }),
         React.createElement(Camera, { onSectionSelect }),
         React.createElement(CoffeeCup, { onSectionSelect }),
-        React.createElement(DeskLamp, { isNightMode, onToggleLight })
+        React.createElement(DeskLamp, { isNightMode, onToggleLight }),
+        // Cables removed per user request
     );
 }
 

@@ -6,7 +6,7 @@ const content = {
     monitor: {
         title: "About Me",
         text: "I'm a Computer Vision Engineer with a passion for bridging the digital and physical worlds. I specialize in deep learning for perception, but my curiosity extends to hardware, 3D printing, and interactive design.",
-        skills: ["Python", "C++", "React", "Three.js", "WebGL"],
+        skills: ["Python", "C/C++", "OpenCV"],
         image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
         socials: [
             { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
@@ -18,7 +18,7 @@ const content = {
     printer: {
         title: "3D Fabrication",
         text: "Turning code into physical reality. I design complex mechanical assemblies in CAD and bring them to life using both FDM and SLA technologies. Experienced in optimizing topology for strength and weight.",
-        skills: ["Fusion 360", "SolidWorks", "PrusaSlicer", "FDM/SLA", "Prototyping"],
+        skills: ["Inventor", "OpenSCAD", "PrusaSlicer", "FDM/SLA", "Prototyping"],
         socials: [
             { name: "My Printables", url: "https://www.printables.com/@__Rasputin___253661", icon: "fa-solid fa-cube" }
         ]
@@ -26,7 +26,7 @@ const content = {
     camera: {
         title: "Computer Vision",
         text: "Teaching machines to understand the world. I build real-time perception systems for robotics and automation, focusing on object detection, segmentation, and pose estimation.",
-        skills: ["PyTorch", "OpenCV", "YOLO", "NVIDIA Jetson", "CUDA"]
+        skills: ["OpenCV", "PyTorch", "YOLO", "NVIDIA Jetson", "CUDA"]
     },
     // Fallback or specific static content for coffee can be empty since we use dynamicContent
     coffee: {}
@@ -52,8 +52,8 @@ export default function App() {
         const fullText = titles[i];
 
         const handleType = () => {
-            setText(isDeleting 
-                ? fullText.substring(0, text.length - 1) 
+            setText(isDeleting
+                ? fullText.substring(0, text.length - 1)
                 : fullText.substring(0, text.length + 1)
             );
 
@@ -97,7 +97,7 @@ export default function App() {
         React.createElement(
             'div',
             { className: 'overlay' },
-            React.createElement('h1', null, 
+            React.createElement('h1', null,
                 text,
                 React.createElement('span', { className: 'cursor' }, '|')
             ),
@@ -120,7 +120,7 @@ export default function App() {
                 currentData.skills && React.createElement(
                     'div',
                     { className: 'skills-container' },
-                    currentData.skills.map(skill => 
+                    currentData.skills.map(skill =>
                         React.createElement('span', { key: skill, className: 'skill-tag' }, skill)
                     )
                 ),

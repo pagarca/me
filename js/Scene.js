@@ -19,6 +19,43 @@ const ResponsiveCamera = () => {
     return React.createElement(PerspectiveCamera, { makeDefault: true, position: position, fov: fov });
 };
 
+const Dust = ({ count = 300 }) => {
+    const points = React.useRef();
+
+    const particles = React.useMemo(() => {
+        const temp = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const x = (Math.random() - 0.5) * 15;
+            const y = Math.random() * 8;
+            const z = (Math.random() - 0.5) * 15;
+            temp[i * 3] = x;
+            temp[i * 3 + 1] = y;
+            temp[i * 3 + 2] = z;
+        }
+        return temp;
+    }, [count]);
+
+    return React.createElement(
+        'points',
+        { ref: points, position: [0, -2, 0] },
+        React.createElement('bufferGeometry', null,
+            React.createElement('bufferAttribute', {
+                attach: 'attributes-position',
+                count: count,
+                itemSize: 3,
+                array: particles
+            })
+        ),
+        React.createElement('pointsMaterial', {
+            size: 0.02, // Much smaller
+            color: '#ffffff',
+            transparent: true,
+            opacity: 0.15, // More subtle
+            sizeAttenuation: true
+        })
+    );
+};
+
 const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
 
@@ -31,6 +68,9 @@ const Scene = ({ onSectionSelect, isNightMode, onToggleLight }) => {
         },
         // Fog for depth
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
+        
+        // Atmosphere
+        React.createElement(Dust, { count: 400 }),
 
         // Camera
         React.createElement(ResponsiveCamera, null),
