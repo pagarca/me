@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pau's Workbench - Engineer Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
     
     <!-- Import Map for No-Build React + Three.js -->
     <script type="importmap">
@@ -14,7 +14,12 @@
                 "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
                 "three": "https://esm.sh/three@0.160.0",
                 "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.14?external=react,react-dom,three",
-                "@react-three/drei": "https://esm.sh/@react-three/drei@9.96.1?external=react,react-dom,three,@react-three/fiber"
+                "@react-three/drei": "https://esm.sh/@react-three/drei@9.96.1?external=react,react-dom,three,@react-three/fiber",
+                
+                "app": "./js/App.js?v=2.0",
+                "scene": "./js/Scene.js?v=2.0",
+                "workbench": "./js/Workbench.js?v=2.0",
+                "coffee_facts": "./js/coffeeFacts.js?v=2.0"
             }
         }
     </script>
@@ -22,6 +27,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="./js/main.js"></script>
+    <script type="module" src="./js/main.js?v=2.0"></script>
 </body>
 </html>

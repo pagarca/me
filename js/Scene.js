@@ -1,7 +1,7 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
-import Workbench from './Workbench.js';
+import Workbench from 'workbench';
 
 
 const ResponsiveCamera = () => {

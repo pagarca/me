@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import Scene from './Scene.js';
-import { coffeeFacts } from './coffeeFacts.js';
+import Scene from 'scene';
+import { coffeeFacts } from 'coffee_facts';
 
 const content = {
     monitor: {
