@@ -16,7 +16,7 @@ const Printer = ({ onSectionSelect, wobble, onHover }) => {
 
     useFrame((state, delta) => {
         if (active && printHeadRef.current) {
-            progress.current += delta * 8;
+            progress.current += delta * 5;
             printHeadRef.current.position.x = Math.sin(progress.current) * 0.25;
         }
     });

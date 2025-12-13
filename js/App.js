@@ -18,7 +18,7 @@ const content = {
     printer: {
         title: "3D Fabrication",
         text: "Turning code into physical reality. I design complex mechanical assemblies in CAD and bring them to life using both FDM and SLA technologies. Experienced in optimizing topology for strength and weight.",
-        skills: ["Inventor", "OpenSCAD", "PrusaSlicer", "FDM/SLA", "Prototyping"],
+        skills: ["Inventor", "OpenSCAD", "Blender", "FDM/SLA", "Prototyping"],
         socials: [
             { name: "My Printables", url: "https://www.printables.com/@__Rasputin___253661", icon: "fa-solid fa-cube" }
         ]
