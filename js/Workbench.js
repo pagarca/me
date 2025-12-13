@@ -149,72 +149,117 @@ const CVScreen = () => {
     );
 };
 
-const Monitor = ({ onSectionSelect }) => React.createElement(
-    InteractiveObject,
-    { id: 'monitor', onSectionSelect, position: [0, 0.6, -1] },
-    // Screen
-    React.createElement(
-        'mesh',
-        { position: [0, 0.8, 0] },
-        React.createElement('boxGeometry', { args: [3, 1.8, 0.1] }),
-        React.createElement('meshStandardMaterial', { color: '#111' })
-    ),
-    // Stand
-    React.createElement(
-        'mesh',
-        { position: [0, -0.2, 0] },
-        React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.4] }),
-        React.createElement('meshStandardMaterial', { color: '#222' })
-    ),
-    // Screen Content
-    React.createElement(CVScreen, null),
-    // Keyboard
-    React.createElement(
+const GhostMouse = ({ active }) => {
+    const mouseBodyRef = useRef();
+    
+    useFrame((state) => {
+        if (!mouseBodyRef.current) return;
+
+        // Smoothly interpolate towards target position
+        // If active: follow procedural "ghost" path
+        // If inactive: return to center [0, 0.08, 0]
+        
+        let targetX = 0;
+        let targetZ = 0;
+
+        if (active) {
+            const time = state.clock.elapsedTime;
+            // Constrained organic movement within mousepad bounds (+/- 0.25 range approx)
+            targetX = Math.sin(time * 2) * 0.15 + Math.cos(time * 1.3) * 0.1;
+            targetZ = Math.cos(time * 1.5) * 0.1 + Math.sin(time * 2.5) * 0.05;
+        }
+
+        // Lerp for smooth start/stop
+        mouseBodyRef.current.position.x += (targetX - mouseBodyRef.current.position.x) * 0.1;
+        mouseBodyRef.current.position.z += (targetZ - mouseBodyRef.current.position.z) * 0.1;
+    });
+
+    return React.createElement(
         'group',
-        { position: [-0.20, -0.5, 0.7], rotation: [0, 0.1, 0] },
-        // Chassis
-        React.createElement(
-            'mesh',
-            { position: [0, 0.02, 0] },
-            React.createElement('boxGeometry', { args: [1.4, 0.05, 0.5] }),
-            React.createElement('meshStandardMaterial', { color: '#2d3436' })
-        ),
-        // Keys Block
-        React.createElement(
-            'mesh',
-            { position: [0, 0.06, 0] },
-            React.createElement('boxGeometry', { args: [1.3, 0.02, 0.4] }),
-            React.createElement('meshStandardMaterial', { color: '#000000' })
-        )
-    ),
-    // Mouse (Grouped with Monitor)
-    React.createElement(
-        'group',
-        { position: [1.1, -0.5, 0.8] }, // Relative to Monitor [0, 0.6, -1] -> World [1.1, 0.1, -0.2]
-        // Mousepad
+        { position: [1.1, -0.5, 0.8] }, // Fixed position on desk
+        // Mousepad (Static)
         React.createElement(
             'mesh',
             { position: [0, 0, 0], rotation: [0, -0.3, 0], receiveShadow: true },
             React.createElement('boxGeometry', { args: [0.7, 0.05, 0.75] }),
             React.createElement('meshStandardMaterial', { color: '#222' })
         ),
-        // Mouse Body
+        // Mouse Body (Animated)
         React.createElement(
             'mesh',
-            { position: [0, 0.08, 0], rotation: [0, -0.2, 0], castShadow: true },
+            { 
+                ref: mouseBodyRef,
+                position: [0, 0.08, 0], 
+                rotation: [0, -0.2, 0], 
+                castShadow: true 
+            },
             React.createElement('boxGeometry', { args: [0.15, 0.08, 0.25] }),
             React.createElement('meshStandardMaterial', { color: '#2d3436' })
         )
-    )
-);
+    );
+};
+
+const Monitor = ({ onSectionSelect }) => {
+    const [hovered, setHovered] = useState(false);
+
+    return React.createElement(
+        InteractiveObject,
+        { 
+            id: 'monitor', 
+            onSectionSelect, 
+            position: [0, 0.6, -1],
+            onHoverChange: setHovered
+        },
+        // Screen
+        React.createElement(
+            'mesh',
+            { position: [0, 0.8, 0] },
+            React.createElement('boxGeometry', { args: [3, 1.8, 0.1] }),
+            React.createElement('meshStandardMaterial', { color: '#111' })
+        ),
+        // Stand
+        React.createElement(
+            'mesh',
+            { position: [0, -0.2, 0] },
+            React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.4] }),
+            React.createElement('meshStandardMaterial', { color: '#222' })
+        ),
+        // Screen Content
+        React.createElement(CVScreen, null),
+        // Keyboard
+        React.createElement(
+            'group',
+            { position: [-0.20, -0.5, 0.7], rotation: [0, 0.1, 0] },
+            // Chassis
+            React.createElement(
+                'mesh',
+                { position: [0, 0.02, 0] },
+                React.createElement('boxGeometry', { args: [1.4, 0.05, 0.5] }),
+                React.createElement('meshStandardMaterial', { color: '#2d3436' })
+            ),
+            // Keys Block
+            React.createElement(
+                'mesh',
+                { position: [0, 0.06, 0] },
+                React.createElement('boxGeometry', { args: [1.3, 0.02, 0.4] }),
+                React.createElement('meshStandardMaterial', { color: '#000000' })
+            )
+        ),
+        // Mouse (Animated Ghost User)
+        React.createElement(GhostMouse, { active: hovered })
+    );
+};
 
 const Printer = ({ onSectionSelect }) => {
     const printHeadRef = useRef();
     const [printerHovered, setPrinterHovered] = useState(false);
 
-    useFrame((state) => {
+    const progress = useRef(0);
+
+    useFrame((state, delta) => {
         if (printerHovered && printHeadRef.current) {
-            printHeadRef.current.position.x = Math.sin(state.clock.elapsedTime * 8) * 0.25;
+            progress.current += delta * 8;
+            printHeadRef.current.position.x = Math.sin(progress.current) * 0.25;
         }
     });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import Workbench from 'workbench';
 
@@ -34,6 +34,15 @@ const Dust = ({ count = 300 }) => {
         }
         return temp;
     }, [count]);
+
+    useFrame((state) => {
+        if (points.current) {
+            // Slow rotation for drift
+            points.current.rotation.y += 0.0005;
+            // Very subtle vertical bobbing
+            points.current.position.y = -2 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+        }
+    });
 
     return React.createElement(
         'points',
