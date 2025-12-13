@@ -181,3 +181,23 @@ body::after {
         flex-wrap: wrap;
     }
 }
+
+.skills-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-tag {
+    background: #4cd137;
+    color: #000;
+    padding: 2px 8px;
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    border-radius: 2px;
+    margin-right: 5px;
+    font-weight: bold;
+    cursor: default;
+    border: none;
+}
