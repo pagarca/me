@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Shape } from 'three';
+import * as THREE from 'three';
 
 // Helper to make an object interactive
 const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick, onHoverChange, ...meshProps }) => {
@@ -41,6 +42,113 @@ const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick
     );
 };
 
+const CVScreen = () => {
+    const greenColor = '#00ff00';
+    const glow = 1.2; // Increased brightness
+
+    return React.createElement(
+        'group',
+        { position: [0, 0.8, 0.07] }, // Slightly in front of screen
+        
+        // CRT Global Light (Projects glow onto desk/keyboard)
+        React.createElement('pointLight', {
+            position: [0, 0, 1],
+            distance: 3,
+            decay: 2,
+            intensity: 2,
+            color: greenColor
+        }),
+
+        // Background Glow (Subtle)
+        React.createElement(
+            'mesh',
+            { position: [0, 0, -0.01] },
+            React.createElement('planeGeometry', { args: [2.8, 1.6] }),
+            React.createElement('meshStandardMaterial', { 
+                color: '#001a00', 
+                emissive: '#002200', 
+                emissiveIntensity: 0.2
+            })
+        ),
+
+        // --- Left Column ---
+        React.createElement(
+            'group',
+            { position: [-0.8, 0, 0] },
+            // "Photo" Square
+            React.createElement(
+                'mesh',
+                { position: [0, 0.3, 0.01] },
+                React.createElement('planeGeometry', { args: [0.6, 0.6] }),
+                React.createElement('meshStandardMaterial', { 
+                    color: greenColor, 
+                    emissive: greenColor, 
+                    emissiveIntensity: glow 
+                })
+            ),
+            // Lines below photo
+            Array.from({ length: 3 }).map((_, i) => 
+                React.createElement(
+                    'mesh',
+                    { key: `l-left-${i}`, position: [0, -0.2 - (i * 0.15), 0.01] },
+                    React.createElement('planeGeometry', { args: [0.6, 0.05] }),
+                    React.createElement('meshStandardMaterial', { 
+                        color: greenColor, 
+                        emissive: greenColor, 
+                        emissiveIntensity: glow 
+                    })
+                )
+            )
+        ),
+
+        // --- Right Column ---
+        React.createElement(
+            'group',
+            { position: [0.4, 0, 0] },
+            // Main Text Block (Title area)
+            React.createElement(
+                'mesh',
+                { position: [0, 0.55, 0.01] },
+                React.createElement('planeGeometry', { args: [1.4, 0.1] }),
+                React.createElement('meshStandardMaterial', { 
+                    color: greenColor, 
+                    emissive: greenColor, 
+                    emissiveIntensity: glow 
+                })
+            ),
+            // Body Text simulation (Two columns of small lines)
+            Array.from({ length: 6 }).map((_, i) => 
+                React.createElement(
+                    'group',
+                    { key: `l-right-${i}`, position: [0, 0.3 - (i * 0.15), 0] },
+                    // Col 1
+                    React.createElement(
+                        'mesh',
+                        { position: [-0.36, 0, 0.01] },
+                        React.createElement('planeGeometry', { args: [0.65, 0.03] }),
+                        React.createElement('meshStandardMaterial', { 
+                            color: greenColor, 
+                            emissive: greenColor, 
+                            emissiveIntensity: glow 
+                        })
+                    ),
+                    // Col 2
+                    React.createElement(
+                        'mesh',
+                        { position: [0.36, 0, 0.01] },
+                        React.createElement('planeGeometry', { args: [0.65, 0.03] }),
+                        React.createElement('meshStandardMaterial', { 
+                            color: greenColor, 
+                            emissive: greenColor, 
+                            emissiveIntensity: glow 
+                        })
+                    )
+                )
+            )
+        )
+    );
+};
+
 const Monitor = ({ onSectionSelect }) => React.createElement(
     InteractiveObject,
     { id: 'monitor', onSectionSelect, position: [0, 0.6, -1] },
@@ -58,13 +166,8 @@ const Monitor = ({ onSectionSelect }) => React.createElement(
         React.createElement('cylinderGeometry', { args: [0.1, 0.2, 0.4] }),
         React.createElement('meshStandardMaterial', { color: '#222' })
     ),
-    // Screen Glow
-    React.createElement(
-        'mesh',
-        { position: [0, 0.8, 0.06] },
-        React.createElement('planeGeometry', { args: [2.8, 1.6] }),
-        React.createElement('meshStandardMaterial', { color: '#00ff00', emissive: '#00ff00', emissiveIntensity: 0.5 })
-    ),
+    // Screen Content
+    React.createElement(CVScreen, null),
     // Keyboard
     React.createElement(
         'group',
@@ -233,6 +336,38 @@ const CoffeeCup = ({ onSectionSelect }) => React.createElement(
     )
 );
 
+const LampHalo = ({ isNightMode }) => {
+    // Generate Halo Texture
+    const texture = useMemo(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 170, 0, 0.8)');
+        gradient.addColorStop(0.4, 'rgba(255, 170, 0, 0.2)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+        const tex = new THREE.CanvasTexture(canvas);
+        return tex;
+    }, []);
+
+    if (!isNightMode) return null;
+
+    return React.createElement(
+        'sprite',
+        { position: [0, 1.3, -0.3], scale: [0.35, 0.35, 0.35] },
+        React.createElement('spriteMaterial', { 
+            map: texture, 
+            transparent: true, 
+            opacity: 0.8,
+            depthWrite: false, 
+            blending: THREE.AdditiveBlending 
+        })
+    );
+};
+
 const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
     InteractiveObject,
     { 
@@ -285,13 +420,15 @@ const DeskLamp = ({ isNightMode, onToggleLight }) => React.createElement(
             { position: [0, 1.3, -0.3], rotation: [1, 0, 0] },
             React.createElement('sphereGeometry', { args: [0.1] }),
             React.createElement('meshStandardMaterial', {
-                color: isNightMode ? '#ffaa00' : '#2a2a2a',
+                color: isNightMode ? '#ffaa00' : '#bbbbbb',
                 emissive: isNightMode ? '#ffaa00' : '#000000',
                 emissiveIntensity: isNightMode ? 2 : 0,
                 roughness: 0.1,
                 metalness: 0.1
             })
         ),
+        // Halo Sprite
+        React.createElement(LampHalo, { isNightMode }),
         // Light source
         React.createElement(
             'pointLight',
