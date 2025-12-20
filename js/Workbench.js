@@ -5,7 +5,7 @@ import Camera from 'camera';
 import CoffeeCup from 'coffee_cup';
 import DeskLamp from 'desk_lamp';
 
-export default function Workbench({ onSectionSelect, activeSection, isNightMode, onToggleLight, isMobile, ...props }) {
+export default function Workbench({ onSectionSelect, activeSection, isNightMode, onToggleLight, isMobile, onDoomTrigger, ...props }) {
     const [activeObject, setActiveObject] = React.useState(null);
     const [anyHovered, setAnyHovered] = React.useState(false);
     const hoverCount = React.useRef(0);
@@ -73,7 +73,7 @@ export default function Workbench({ onSectionSelect, activeSection, isNightMode,
             )
         ),
         // Sub-Components
-        React.createElement(Monitor, { onSectionSelect, wobble: activeObject === 'monitor', onHover: handleChildHover }),
+        React.createElement(Monitor, { onSectionSelect, wobble: activeObject === 'monitor', onHover: handleChildHover, onDoomTrigger }),
         React.createElement(Printer, { onSectionSelect, wobble: activeObject === 'printer', onHover: handleChildHover }),
         React.createElement(Camera, { onSectionSelect, wobble: activeObject === 'camera', onHover: handleChildHover }),
         React.createElement(CoffeeCup, { onSectionSelect, wobble: activeObject === 'coffee', onHover: handleChildHover }),

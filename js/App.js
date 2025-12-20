@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Scene from 'scene';
 import { coffeeFacts } from 'coffee_facts';
+import DoomHUD from 'DoomHUD';
 
 const content = {
     monitor: {
@@ -71,7 +72,28 @@ export default function App() {
         return () => clearTimeout(timer);
     }, [text, isDeleting, loopNum]);
 
+    const [doomMode, setDoomMode] = useState(false);
+    const [isShooting, setIsShooting] = useState(false);
+
+    const handleDoomTrigger = useCallback((state = true) => {
+        setDoomMode(state);
+        if (state === true) setActiveSection(null);
+    }, []);
+
+    // Global listener for shooting in App (since HUD is here)
+    useEffect(() => {
+        if (!doomMode) return;
+        const onMouseDown = () => {
+            setIsShooting(true);
+            setTimeout(() => setIsShooting(false), 150); // Match CSS animation length slightly longer
+        };
+        window.addEventListener('mousedown', onMouseDown);
+        return () => window.removeEventListener('mousedown', onMouseDown);
+    }, [doomMode]);
+
     const handleSectionSelect = useCallback((id) => {
+        if (doomMode) return; // Disable normal selection in Doom Mode
+
         if (id === 'coffee') {
             const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
             setDynamicContent({
@@ -83,7 +105,7 @@ export default function App() {
             setDynamicContent(null);
             setActiveSection(id);
         }
-    }, []);
+    }, [doomMode]);
 
 
 
@@ -97,11 +119,12 @@ export default function App() {
         React.createElement(
             'div',
             { className: 'overlay' },
-            React.createElement('h1', null,
+            doomMode ? React.createElement(DoomHUD, null) : null,
+            !doomMode && React.createElement('h1', null,
                 text,
                 React.createElement('span', { className: 'cursor' }, '|')
             ),
-            React.createElement('p', null, "Select an object to explore"),
+            !doomMode && React.createElement('p', null, "Select an object to explore"),
 
             // Dynamic Content Card
             activeSection && currentData && React.createElement(
@@ -155,7 +178,9 @@ export default function App() {
             onSectionSelect: handleSectionSelect,
             activeSection: activeSection,
             isNightMode: isNightMode,
-            onToggleLight: toggleLight
+            onToggleLight: toggleLight,
+            doomMode: doomMode,
+            onDoomTrigger: handleDoomTrigger
         })
     );
 }

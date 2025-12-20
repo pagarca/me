@@ -1,7 +1,9 @@
 import React, { Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, ContactShadows, Environment } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, ContactShadows, Environment, PointerLockControls } from '@react-three/drei';
 import Workbench from 'workbench';
+import DoomMovement from 'DoomMovement';
+import DoomEnemies from 'DoomEnemies';
 
 
 const ResponsiveCamera = ({ isMobile }) => {
@@ -57,9 +59,34 @@ const Dust = ({ count = 300 }) => {
     );
 };
 
-const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) => {
+const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doomMode, onDoomTrigger }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
     const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    const [muzzleFlash, setMuzzleFlash] = React.useState(false);
+
+    // Handle Shooting
+    React.useEffect(() => {
+        if (!doomMode) return;
+
+        const handleMouseDown = (e) => {
+            // Only left click
+            if (e.button !== 0) return;
+            
+            // Trigger Flash locally
+            setMuzzleFlash(true);
+            setTimeout(() => setMuzzleFlash(false), 50);
+            
+            // Notify App for HUD animation
+            if (onDoomTrigger) {
+                // We're abusing onDoomTrigger slightly or we need a new prop.
+                // onDoomTrigger is strictly for switching modes.
+                // Let's assume Scene renders DoomHUD? No, App does.
+            }
+        };
+
+        window.addEventListener('mousedown', handleMouseDown);
+        return () => window.removeEventListener('mousedown', handleMouseDown);
+    }, [doomMode]);
 
     React.useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -84,14 +111,32 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
         React.createElement(ResponsiveCamera, { isMobile }),
 
         // Controls
-        React.createElement(OrbitControls, {
-            target: [0, 0.5, 0],
-            minPolarAngle: 0,
-            maxPolarAngle: Math.PI / 2.2,
-            enablePan: false,
-            minDistance: 3,
-            maxDistance: 15
-        }),
+        doomMode
+            ? React.createElement(React.Fragment, null,
+                React.createElement(PointerLockControls, {
+                    makeDefault: true,
+                    selector: "#root",
+                    onUnlock: () => {
+                        // When pointer lock is lost (ESC), we exit Doom Mode
+                        if (onDoomTrigger && doomMode) onDoomTrigger(false); 
+                    }
+                }),
+                React.createElement(DoomMovement, {
+                    onExit: () => {
+                         if (onDoomTrigger && doomMode) onDoomTrigger(false);
+                         // We also need to explicitly unlock pointer lock document-wide if we use custom key
+                         if (document.exitPointerLock) document.exitPointerLock();
+                    }
+                })
+            )
+            : React.createElement(OrbitControls, {
+                target: [0, 0.5, 0],
+                minPolarAngle: 0,
+                maxPolarAngle: Math.PI / 2.2,
+                enablePan: false,
+                minDistance: 3,
+                maxDistance: 15
+            }),
 
         // Lights (Day/Night Logic) - Increased to compensate for no Environment
         React.createElement('ambientLight', {
@@ -118,7 +163,7 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
                 receiveShadow: true,
                 onClick: (e) => {
                     e.stopPropagation();
-                    onSectionSelect(null);
+                    if (!doomMode) onSectionSelect(null);
                 }
             },
             React.createElement('planeGeometry', { args: [100, 100] }),
@@ -135,13 +180,29 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
         }),
 
         // Interactive Workbench
+        // In Doom Mode, maybe we hide the workbench or keep it? User might want to shoot it.
+        // Let's keep it.
         React.createElement(Workbench, {
             position: [0, -1, 0],
             onSectionSelect: onSectionSelect,
             activeSection: activeSection,
             isNightMode: isNightMode,
             onToggleLight: onToggleLight,
-            isMobile: isMobile
+            isMobile: isMobile,
+            onDoomTrigger: onDoomTrigger
+        }),
+
+        // Doom Enemies
+        doomMode && React.createElement(DoomEnemies, null),
+
+        // Muzzle Flash Overlay (Simple 2D or 3D?)
+        // Let's do a simple screen flash or light?
+        // A point light at camera position would look cool.
+        doomMode && muzzleFlash && React.createElement('pointLight', {
+            position: [0, 2, 8], // Near camera roughly
+            intensity: 10,
+            distance: 10,
+            color: '#ffff00'
         })
     );
 }

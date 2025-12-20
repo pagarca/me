@@ -159,19 +159,40 @@ const GhostMouse = ({ active }) => {
     );
 };
 
-const Monitor = ({ onSectionSelect, wobble, onHover }) => {
+const Monitor = ({ onSectionSelect, wobble, onHover, onDoomTrigger }) => {
     const [hovered, setHovered] = useState(false);
+    const clickCount = useRef(0);
+    const lastClickTime = useRef(0);
     
     const handleHover = (val) => {
         setHovered(val);
         if (onHover) onHover(val);
     };
 
+    const handleClick = () => {
+        // Trigger normal section select
+        if (onSectionSelect) onSectionSelect('monitor');
+
+        const now = Date.now();
+        // Reset if more than 1 second between clicks
+        if (now - lastClickTime.current > 1000) {
+            clickCount.current = 0;
+        }
+        clickCount.current += 1;
+        lastClickTime.current = now;
+
+        if (clickCount.current >= 10 && onDoomTrigger) {
+            onDoomTrigger();
+            clickCount.current = 0;
+        }
+    };
+
     return React.createElement(
         InteractiveObject,
         { 
             id: 'monitor', 
-            onSectionSelect, 
+            onSectionSelect,
+            onClick: handleClick,
             position: [0, 0.6, -1],
             onHoverChange: handleHover,
             wobble
