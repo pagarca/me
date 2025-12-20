@@ -74,22 +74,40 @@ export default function App() {
 
     const [doomMode, setDoomMode] = useState(false);
     const [isShooting, setIsShooting] = useState(false);
+    const [ammo, setAmmo] = useState(8);
 
     const handleDoomTrigger = useCallback((state = true) => {
         setDoomMode(state);
-        if (state === true) setActiveSection(null);
+        if (state === true) {
+            setActiveSection(null);
+            setAmmo(8); // Reset ammo when entering Doom mode
+        }
     }, []);
 
     // Global listener for shooting in App (since HUD is here)
     useEffect(() => {
         if (!doomMode) return;
+        
         const onMouseDown = () => {
+            if (ammo <= 0) return; // No ammo, can't shoot
             setIsShooting(true);
-            setTimeout(() => setIsShooting(false), 150); // Match CSS animation length slightly longer
+            setAmmo(prev => Math.max(0, prev - 1)); // Prevent going below 0
+            setTimeout(() => setIsShooting(false), 150);
         };
+        
+        const onKeyDown = (e) => {
+            if (e.code === 'KeyR') {
+                setAmmo(8); // Reload with R key
+            }
+        };
+        
         window.addEventListener('mousedown', onMouseDown);
-        return () => window.removeEventListener('mousedown', onMouseDown);
-    }, [doomMode]);
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('mousedown', onMouseDown);
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [doomMode, ammo]);
 
     const handleSectionSelect = useCallback((id) => {
         if (doomMode) return; // Disable normal selection in Doom Mode
@@ -119,7 +137,12 @@ export default function App() {
         React.createElement(
             'div',
             { className: 'overlay' },
-            doomMode ? React.createElement(DoomHUD, null) : null,
+            doomMode ? React.createElement(DoomHUD, { 
+                isShooting: isShooting, 
+                ammo: ammo,
+                health: 100,
+                armor: 0
+            }) : null,
             !doomMode && React.createElement('h1', null,
                 text,
                 React.createElement('span', { className: 'cursor' }, '|')
@@ -180,7 +203,8 @@ export default function App() {
             isNightMode: isNightMode,
             onToggleLight: toggleLight,
             doomMode: doomMode,
-            onDoomTrigger: handleDoomTrigger
+            onDoomTrigger: handleDoomTrigger,
+            ammo: ammo
         })
     );
 }

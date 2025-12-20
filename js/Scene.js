@@ -59,29 +59,19 @@ const Dust = ({ count = 300 }) => {
     );
 };
 
-const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doomMode, onDoomTrigger }) => {
+const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doomMode, onDoomTrigger, ammo }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
     const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
     const [muzzleFlash, setMuzzleFlash] = React.useState(false);
 
-    // Handle Shooting
+    // Muzzle flash effect for shooting
     React.useEffect(() => {
         if (!doomMode) return;
 
         const handleMouseDown = (e) => {
-            // Only left click
-            if (e.button !== 0) return;
-            
-            // Trigger Flash locally
+            if (e.button !== 0) return; // Left click only
             setMuzzleFlash(true);
             setTimeout(() => setMuzzleFlash(false), 50);
-            
-            // Notify App for HUD animation
-            if (onDoomTrigger) {
-                // We're abusing onDoomTrigger slightly or we need a new prop.
-                // onDoomTrigger is strictly for switching modes.
-                // Let's assume Scene renders DoomHUD? No, App does.
-            }
         };
 
         window.addEventListener('mousedown', handleMouseDown);
@@ -179,9 +169,7 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doo
             far: 4.5
         }),
 
-        // Interactive Workbench
-        // In Doom Mode, maybe we hide the workbench or keep it? User might want to shoot it.
-        // Let's keep it.
+        // Workbench
         React.createElement(Workbench, {
             position: [0, -1, 0],
             onSectionSelect: onSectionSelect,
@@ -193,13 +181,11 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doo
         }),
 
         // Doom Enemies
-        doomMode && React.createElement(DoomEnemies, null),
+        doomMode && React.createElement(DoomEnemies, { ammo: ammo }),
 
-        // Muzzle Flash Overlay (Simple 2D or 3D?)
-        // Let's do a simple screen flash or light?
-        // A point light at camera position would look cool.
+        // Muzzle Flash (point light near camera)
         doomMode && muzzleFlash && React.createElement('pointLight', {
-            position: [0, 2, 8], // Near camera roughly
+            position: [0, 2, 8],
             intensity: 10,
             distance: 10,
             color: '#ffff00'

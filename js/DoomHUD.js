@@ -1,69 +1,67 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-const DoomHUD = ({ health = 100, ammo = 50, armor = 0, isShooting }) => {
-    // No more breathing animation loop
+/**
+ * Doom-style HUD overlay component.
+ * Displays weapon, crosshair, and status bar with health/ammo/armor.
+ * 
+ * @param {Object} props
+ * @param {number} props.health - Player health (0-100)
+ * @param {number} props.ammo - Current ammo count
+ * @param {number} props.armor - Player armor (0-100)
+ * @param {boolean} props.isShooting - Whether the player is currently shooting (triggers recoil animation)
+ */
+const DoomHUD = ({ health = 100, ammo = 8, armor = 0, isShooting = false }) => {
+    // Calculate damage overlay opacity based on health
+    const damageOverlayOpacity = ((100 - health) / 100) * 0.5;
     
+    // Calculate sepia filter for "damage" effect on face
+    const damageFilter = `sepia(${100 - health}%) hue-rotate(-50deg) saturate(500%)`;
+
     return React.createElement('div', { className: 'doom-hud-container' },
-        // Main Viewport (Crosshair + Weapon)
+        // Viewport (Crosshair + Weapon)
         React.createElement('div', { className: 'doom-viewport' },
-             React.createElement('div', { className: 'doom-crosshair' }, '+'),
-             // Static Wrapper (or just image if no wrapper needed, but wrapper helps centering)
-             React.createElement('div', { 
-                className: 'doom-weapon-wrapper',
-                style: { 
-                    position: 'absolute',
-                    bottom: 0,
-                    left: '50%',
-                    transform: 'translate(-50%, 0)' // Static
-                }
-             },
-                // Actual Weapon Image with Recoil Class
+            // Muzzle Flash (inside viewport, rendered FIRST so it's behind weapon)
+            isShooting && React.createElement('div', { className: 'doom-muzzle-flash' }),
+            React.createElement('div', { className: 'doom-crosshair' }, '+'),
+            React.createElement('div', { className: 'doom-weapon-wrapper' },
                 React.createElement('img', { 
                     src: 'assets/doom_shotgun.png', 
                     className: `doom-weapon ${isShooting ? 'firing' : ''}`,
+                    alt: 'Shotgun'
                 })
-             )
+            )
         ),
         
         // Status Bar
         React.createElement('div', { className: 'doom-status-bar' },
-            // Left: Ammo/Health
+            // Ammo
             React.createElement('div', { className: 'doom-stat-box' }, 
                 React.createElement('span', { className: 'doom-label' }, 'AMMO'),
                 React.createElement('span', { className: 'doom-value' }, ammo)
             ),
+            // Health
             React.createElement('div', { className: 'doom-stat-box' }, 
                 React.createElement('span', { className: 'doom-label' }, 'HEALTH'),
                 React.createElement('span', { className: 'doom-value' }, `${health}%`)
             ),
-
-            // Center: Face - Profile Picture with Red Tint based on Health
+            // Face (Profile Picture)
             React.createElement('div', { className: 'doom-face-box' },
                 React.createElement('img', { 
                     src: 'https://github.com/pagarca.png',
+                    alt: 'Player Face',
                     style: { 
                         width: '100%', 
                         height: '100%', 
                         objectFit: 'cover',
-                        filter: `sepia(${100 - health}%) hue-rotate(-50deg) saturate(500%)`,
+                        filter: damageFilter
                     }
                 }),
-                // Damage overlay
                 React.createElement('div', {
-                    style: {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: 'red',
-                        opacity: (100 - health) / 100 * 0.5, // Max 50% red tint
-                        pointerEvents: 'none'
-                    }
+                    className: 'doom-face-damage-overlay',
+                    style: { opacity: damageOverlayOpacity }
                 })
             ),
-
-            // Right: Armor
+            // Armor
             React.createElement('div', { className: 'doom-stat-box' }, 
                 React.createElement('span', { className: 'doom-label' }, 'ARMOR'),
                 React.createElement('span', { className: 'doom-value' }, `${armor}%`)
