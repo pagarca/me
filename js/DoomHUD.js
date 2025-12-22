@@ -14,8 +14,14 @@ const DoomHUD = ({ health = 100, ammo = 8, armor = 0, isShooting = false }) => {
     // Calculate damage overlay opacity based on health
     const damageOverlayOpacity = ((100 - health) / 100) * 0.5;
     
-    // Calculate sepia filter for "damage" effect on face
-    const damageFilter = `sepia(${100 - health}%) hue-rotate(-50deg) saturate(500%)`;
+    // Calculate dynamic hue shift:
+    // 100% Health -> Green (~100deg shift from sepia)
+    // 0% Health -> Red (~-50deg shift from sepia)
+    const hueShift = -50 + (health / 100) * 150;
+    
+    // Sepia(100%) makes it monochrome (brownish-yellow, approx hue 40-50)
+    // Then we rotate hue to get desired color.
+    const damageFilter = `sepia(100%) hue-rotate(${hueShift}deg) saturate(300%)`;
 
     return React.createElement('div', { className: 'doom-hud-container' },
         // Viewport (Crosshair + Weapon)

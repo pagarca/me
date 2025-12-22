@@ -59,7 +59,7 @@ const Dust = ({ count = 300 }) => {
     );
 };
 
-const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doomMode, onDoomTrigger, ammo }) => {
+const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doomMode, onDoomTrigger, ammo, onPlayerDamage }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
     const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
     const [muzzleFlash, setMuzzleFlash] = React.useState(false);
@@ -181,7 +181,7 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight, doo
         }),
 
         // Doom Enemies
-        doomMode && React.createElement(DoomEnemies, { ammo: ammo }),
+        doomMode && React.createElement(DoomEnemies, { ammo: ammo, onPlayerDamage: onPlayerDamage }),
 
         // Muzzle Flash (point light near camera)
         doomMode && muzzleFlash && React.createElement('pointLight', {

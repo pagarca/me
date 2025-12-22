@@ -76,12 +76,19 @@ export default function App() {
     const [isShooting, setIsShooting] = useState(false);
     const [ammo, setAmmo] = useState(8);
 
+    const [health, setHealth] = useState(100);
+
     const handleDoomTrigger = useCallback((state = true) => {
         setDoomMode(state);
         if (state === true) {
             setActiveSection(null);
             setAmmo(8); // Reset ammo when entering Doom mode
+            setHealth(100); // Reset health
         }
+    }, []);
+
+    const handlePlayerDamage = useCallback((amount) => {
+        setHealth(prev => Math.max(0, prev - amount));
     }, []);
 
     // Global listener for shooting in App (since HUD is here)
@@ -140,7 +147,7 @@ export default function App() {
             doomMode ? React.createElement(DoomHUD, { 
                 isShooting: isShooting, 
                 ammo: ammo,
-                health: 100,
+                health: health,
                 armor: 0
             }) : null,
             !doomMode && React.createElement('h1', null,
@@ -204,7 +211,8 @@ export default function App() {
             onToggleLight: toggleLight,
             doomMode: doomMode,
             onDoomTrigger: handleDoomTrigger,
-            ammo: ammo
+            ammo: ammo,
+            onPlayerDamage: handlePlayerDamage
         })
     );
 }
