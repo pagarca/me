@@ -1,4 +1,4 @@
-import React, { useState, useCallback, Suspense } from 'react';
+import React, { useState, useCallback, Suspense, useEffect } from 'react';
 import Scene from 'scene';
 import LoadingScreen from 'loading_screen';
 import { coffeeFacts } from 'coffee_facts';
