@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, ContactShadows, Environment } from '@react-three/drei';
 import Workbench from 'workbench';
@@ -14,7 +14,16 @@ const ResponsiveCamera = ({ isMobile }) => {
 const Dust = ({ count = 300 }) => {
     const points = React.useRef();
 
-    const particles = React.useMemo(() => {
+    const particleGeometry = useMemo(() => React.createElement('bufferGeometry', null), []);
+    const particleMaterial = useMemo(() => React.createElement('pointsMaterial', {
+        size: 0.02,
+        color: '#ffffff',
+        transparent: true,
+        opacity: 0.15,
+        sizeAttenuation: true
+    }), []);
+
+    const particles = useMemo(() => {
         const temp = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
             const x = (Math.random() - 0.5) * 15;
@@ -29,9 +38,7 @@ const Dust = ({ count = 300 }) => {
 
     useFrame((state) => {
         if (points.current) {
-            // Slow rotation for drift
             points.current.rotation.y += 0.0005;
-            // Very subtle vertical bobbing
             points.current.position.y = -2 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
         }
     });
@@ -39,51 +46,68 @@ const Dust = ({ count = 300 }) => {
     return React.createElement(
         'points',
         { ref: points, position: [0, -2, 0] },
-        React.createElement('bufferGeometry', null,
-            React.createElement('bufferAttribute', {
-                attach: 'attributes-position',
-                count: count,
-                itemSize: 3,
-                array: particles
-            })
-        ),
-        React.createElement('pointsMaterial', {
-            size: 0.02, // Much smaller
-            color: '#ffffff',
-            transparent: true,
-            opacity: 0.15, // More subtle
-            sizeAttenuation: true
-        })
+        particleGeometry,
+        React.createElement('bufferAttribute', {
+            attach: 'attributes-position',
+            count: count,
+            itemSize: 3,
+            array: particles
+        }),
+        particleMaterial
     );
 };
 
 const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) => {
     const bgColor = isNightMode ? '#050505' : '#171720';
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [showPerf, setShowPerf] = useState(false);
 
-    React.useEffect(() => {
+    const dpr = isMobile ? [1, 1.5] : [1, 2];
+
+    useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        setShowPerf(urlParams.has('debug'));
+    }, []);
+
+    const floorGeometry = useMemo(() => React.createElement('planeGeometry', { args: [100, 100] }), []);
+    const floorMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: bgColor }), [bgColor]);
+
     return React.createElement(
         Canvas,
         {
             shadows: true,
+            dpr: dpr,
             style: { width: '100%', height: '100%', background: bgColor },
             onPointerMissed: () => onSectionSelect(null)
         },
-        // Fog for depth
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
-
-        // Atmosphere
         React.createElement(Dust, { count: 400 }),
-
-        // Camera
         React.createElement(ResponsiveCamera, { isMobile }),
-
-        // Controls
+        showPerf && React.createElement(
+            'group',
+            { position: [-3.5, 3, 0] },
+            React.createElement('mesh', {
+                geometry: React.createElement('planeGeometry', { args: [0.5, 0.3] }),
+                material: React.createElement('meshBasicMaterial', {
+                    color: 0x000000,
+                    transparent: true,
+                    opacity: 0.7
+                })
+            }),
+            React.createElement('text', {
+                position: [0, 0, 0.01],
+                fontSize: 0.08,
+                color: '#4cd137',
+                anchorX: 'center',
+                anchorY: 'middle'
+            }, 'Debug Mode')
+        ),
         React.createElement(OrbitControls, {
             target: [0, 0.5, 0],
             minPolarAngle: 0,
@@ -92,8 +116,6 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
             minDistance: 3,
             maxDistance: 15
         }),
-
-        // Lights (Day/Night Logic) - Increased to compensate for no Environment
         React.createElement('ambientLight', {
             intensity: isNightMode ? 0.1 : 4,
             color: isNightMode ? '#001133' : '#ffffff'
@@ -101,15 +123,12 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
         React.createElement('directionalLight', {
             position: [5, 10, 5],
             intensity: isNightMode ? 0.2 : 3,
-            castShadow: true
+            castShadow: true,
+            shadowMapSize: isMobile ? [1024, 1024] : [2048, 2048]
         }),
-
-        // Environment (wrapped in Suspense so scene loads even if HDR fails)
         React.createElement(Suspense, { fallback: null },
-            React.createElement(Environment, { preset: 'city' })
+            React.createElement(Environment, { preset: 'sunset' })
         ),
-
-        // Floor (Infinite plane handled by fog, but we keep mesh for raycasting/grounding)
         React.createElement(
             'mesh',
             {
@@ -121,11 +140,9 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
                     onSectionSelect(null);
                 }
             },
-            React.createElement('planeGeometry', { args: [100, 100] }),
-            React.createElement('meshStandardMaterial', { color: bgColor })
+            floorGeometry,
+            floorMaterial
         ),
-
-        // Soft Shadows
         React.createElement(ContactShadows, {
             position: [0, -2.99, 0],
             opacity: 0.4,
@@ -133,8 +150,6 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
             blur: 2,
             far: 4.5
         }),
-
-        // Interactive Workbench
         React.createElement(Workbench, {
             position: [0, -1, 0],
             onSectionSelect: onSectionSelect,
@@ -144,6 +159,6 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
             isMobile: isMobile
         })
     );
-}
+};
 
 export default React.memo(Scene);

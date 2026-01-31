@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import InteractiveObject from 'interactive_object';
 
@@ -13,6 +13,23 @@ const Printer = ({ onSectionSelect, wobble, onHover }) => {
 
     const progress = useRef(0);
     const active = printerHovered || wobble;
+
+    const bedGeometry = useMemo(() => React.createElement('boxGeometry', { args: [1, 0.1, 1] }), []);
+    const bedMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#222' }), []);
+
+    const pillarGeometry = useMemo(() => React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }), []);
+    const pillarMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#333' }), []);
+
+    const topBarGeometry = useMemo(() => React.createElement('boxGeometry', { args: [1, 0.1, 0.1] }), []);
+
+    const extruderGeometry = useMemo(() => React.createElement('boxGeometry', { args: [0.15, 0.2, 0.15] }), []);
+    const extruderMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#555' }), []);
+
+    const nozzleGeometry = useMemo(() => React.createElement('cylinderGeometry', { args: [0.01, 0.005, 0.02] }), []);
+    const nozzleMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#ffff00' }), []);
+
+    const pyramidGeometry = useMemo(() => React.createElement('coneGeometry', { args: [0.2, 0.4, 4] }), []);
+    const pyramidMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#00ffff' }), []);
 
     useFrame((state, delta) => {
         if (active && printHeadRef.current) {
@@ -31,59 +48,51 @@ const Printer = ({ onSectionSelect, wobble, onHover }) => {
             onHoverChange: handleHover,
             wobble
         },
-        // Bed (Base)
         React.createElement(
             'mesh',
             { position: [0, 0.1, 0] },
-            React.createElement('boxGeometry', { args: [1, 0.1, 1] }),
-            React.createElement('meshStandardMaterial', { color: '#222' })
+            bedGeometry,
+            bedMaterial
         ),
-        // Gantry Frame (Left Pillar)
         React.createElement(
             'mesh',
             { position: [-0.4, 0.6, 0] },
-            React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
-            React.createElement('meshStandardMaterial', { color: '#333' })
+            pillarGeometry,
+            pillarMaterial
         ),
-        // Gantry Frame (Right Pillar)
         React.createElement(
             'mesh',
             { position: [0.4, 0.6, 0] },
-            React.createElement('boxGeometry', { args: [0.1, 1, 0.1] }),
-            React.createElement('meshStandardMaterial', { color: '#333' })
+            pillarGeometry,
+            pillarMaterial
         ),
-        // Gantry Frame (Top Bar)
         React.createElement(
             'mesh',
             { position: [0, 1.1, 0] },
-            React.createElement('boxGeometry', { args: [1, 0.1, 0.1] }),
-            React.createElement('meshStandardMaterial', { color: '#333' })
+            topBarGeometry,
+            pillarMaterial
         ),
-        // Print Head (Animated)
         React.createElement(
             'group',
             { ref: printHeadRef, position: [0, 0.8, 0] },
-            // Extruder Block
             React.createElement(
                 'mesh',
                 { position: [0, 0.12, 0] },
-                React.createElement('boxGeometry', { args: [0.15, 0.2, 0.15] }),
-                React.createElement('meshStandardMaterial', { color: '#555' })
+                extruderGeometry,
+                extruderMaterial
             ),
-            // Nozzle
             React.createElement(
                 'mesh',
                 { position: [0, -0.03, 0] },
-                React.createElement('cylinderGeometry', { args: [0.01, 0.005, 0.02] }),
-                React.createElement('meshStandardMaterial', { color: '#ffff00' })
+                nozzleGeometry,
+                nozzleMaterial
             )
         ),
-        // Printed Object (Little Pyramid/Cone)
         React.createElement(
             'mesh',
             { position: [0, 0.3, 0] },
-            React.createElement('coneGeometry', { args: [0.2, 0.4, 4] }),
-            React.createElement('meshStandardMaterial', { color: '#00ffff' })
+            pyramidGeometry,
+            pyramidMaterial
         )
     );
 };
