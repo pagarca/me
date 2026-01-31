@@ -2,13 +2,15 @@ import React, { useState, useCallback, Suspense } from 'react';
 import Scene from 'scene';
 import LoadingScreen from 'loading_screen';
 import { coffeeFacts } from 'coffee_facts';
+import config from 'config';
+
 
 const content = {
     monitor: {
         title: "About Me",
         text: "I'm a Computer Vision Engineer with a passion for bridging the digital and physical worlds. I specialize in deep learning for perception, but my curiosity extends to hardware, 3D printing, and interactive design.",
         skills: ["Python", "C/C++", "OpenCV"],
-        image: "https://github.com/pagarca.png", // Auto-fetched from GitHub
+        image: "https://github.com/pagarca.png",
         socials: [
             { name: "GitHub", url: "https://github.com/pagarca", icon: "fa-brands fa-github" },
             { name: "LinkedIn", url: "https://www.linkedin.com/in/pau-garrigues-carb%C3%B3-a838b8b8/", icon: "fa-brands fa-linkedin" },
@@ -29,24 +31,54 @@ const content = {
         text: "Teaching machines to understand the world. I build real-time perception systems for robotics and automation, focusing on object detection, segmentation, and pose estimation.",
         skills: ["OpenCV", "PyTorch", "YOLO", "NVIDIA Jetson", "CUDA"]
     },
-    // Fallback or specific static content for coffee can be empty since we use dynamicContent
     coffee: {}
 };
 
 export default function App() {
     const [activeSection, setActiveSection] = useState(null);
     const [isNightMode, setNightMode] = useState(false);
+    const [highContrast, setHighContrast] = useState(false);
     const [dynamicContent, setDynamicContent] = useState(null);
 
-    // Typewriter State
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
     const [typingSpeed, setTypingSpeed] = useState(150);
 
     const toggleLight = useCallback(() => setNightMode((prev) => !prev), []);
+    const toggleHighContrast = useCallback(() => setHighContrast((prev) => !prev), []);
 
-    // Typewriter Effect
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && activeSection) {
+                setActiveSection(null);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeSection]);
+
+    React.useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        const savedContrast = localStorage.getItem('highContrast');
+        if (savedTheme === 'night') setNightMode(true);
+        if (savedContrast === 'true') setHighContrast(true);
+    }, []);
+
+    React.useEffect(() => {
+        localStorage.setItem('theme', isNightMode ? 'night' : 'day');
+        localStorage.setItem('highContrast', highContrast.toString());
+
+        const body = document.getElementById('app-body');
+        if (body) {
+            if (highContrast) {
+                body.classList.add('high-contrast');
+            } else {
+                body.classList.remove('high-contrast');
+            }
+        }
+    }, [isNightMode, highContrast]);
+
     React.useEffect(() => {
         const titles = ["Pau's Workbench"];
         const i = loopNum % titles.length;
@@ -61,7 +93,7 @@ export default function App() {
             setTypingSpeed(isDeleting ? 30 : 150);
 
             if (!isDeleting && text === fullText) {
-                setTimeout(() => setIsDeleting(true), 2000); // Pause at end
+                setTimeout(() => setIsDeleting(true), 2000);
             } else if (isDeleting && text === '') {
                 setIsDeleting(false);
                 setLoopNum(loopNum + 1);
@@ -86,38 +118,61 @@ export default function App() {
         }
     }, []);
 
-
-
-    // Helper to get current content
     const currentData = dynamicContent || content[activeSection];
+    const colors = config.colors;
+    const accentColor = highContrast ? colors.accessibility.highContrastColors.foreground : colors.retroGreen;
 
     return React.createElement(
         React.Fragment,
         null,
-        // UI Overlay
         React.createElement(
             'div',
-            { className: 'overlay' },
-            React.createElement('h1', null,
+            {
+                className: 'overlay',
+                role: 'main',
+                'aria-live': 'polite'
+            },
+            React.createElement('div', {
+                className: 'controls-bar',
+                style: { display: 'flex', gap: '10px', marginBottom: '10px' }
+            },
+            React.createElement('button', {
+                onClick: toggleLight,
+                'aria-label': isNightMode ? 'Switch to day mode' : 'Switch to night mode',
+                className: 'control-btn',
+                style: { color: accentColor, borderColor: accentColor }
+            }, isNightMode ? '☀️ Day' : '🌙 Night'),
+            React.createElement('button', {
+                onClick: toggleHighContrast,
+                'aria-label': highContrast ? 'Disable high contrast' : 'Enable high contrast',
+                className: 'control-btn',
+                style: { color: accentColor, borderColor: accentColor }
+            }, highContrast ? '◐ Normal' : '◑ High Contrast')
+            ),
+            React.createElement('h1', {
+                style: { color: highContrast ? colors.accessibility.highContrastColors.foreground : accentColor }
+            },
                 text,
                 React.createElement('span', { className: 'cursor' }, '|')
             ),
             React.createElement('p', null, "Select an object to explore"),
-
-            // Dynamic Content Card
             activeSection && currentData && React.createElement(
                 'div',
-                { className: 'info-card' },
-                // Optional Image
+                {
+                    className: 'info-card',
+                    role: 'dialog',
+                    'aria-modal': 'true',
+                    'aria-labelledby': `dialog-title-${activeSection}`
+                },
                 currentData.image && React.createElement('img', {
                     src: currentData.image,
                     className: 'profile-img',
-                    alt: 'Profile'
+                    alt: 'Profile photo'
                 }),
-                React.createElement('h2', null, currentData.title),
+                React.createElement('h2', {
+                    id: `dialog-title-${activeSection}`
+                }, currentData.title),
                 React.createElement('p', null, currentData.text),
-
-                // Skills Section
                 currentData.skills && React.createElement(
                     'div',
                     { className: 'skills-container' },
@@ -125,8 +180,6 @@ export default function App() {
                         React.createElement('span', { key: skill, className: 'skill-tag' }, skill)
                     )
                 ),
-
-                // Optional Socials
                 currentData.socials && React.createElement(
                     'div',
                     { className: 'social-links' },
@@ -135,23 +188,26 @@ export default function App() {
                             key: link.name,
                             href: link.url,
                             className: 'social-btn',
-                            target: '_blank'
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
+                            'aria-label': `Open ${link.name} in new tab`
                         },
-                            // Icon
                             link.icon && React.createElement('i', { className: `${link.icon}`, style: { marginRight: '8px' } }),
                             link.name
                         )
                     )
                 ),
-
                 React.createElement(
                     'button',
-                    { onClick: () => setActiveSection(null), style: { marginTop: '1rem', cursor: 'pointer' } },
+                    {
+                        onClick: () => setActiveSection(null),
+                        style: { marginTop: '1rem', cursor: 'pointer' },
+                        'aria-label': 'Close dialog'
+                    },
                     "Close"
                 )
             )
         ),
-        // 3D Scene with props (wrapped in Suspense for loading screen)
         React.createElement(
             Suspense,
             { fallback: React.createElement(LoadingScreen) },

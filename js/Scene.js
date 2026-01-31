@@ -3,7 +3,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, ContactShadows, Environment } from '@react-three/drei';
 import Workbench from 'workbench';
 
-
 const ResponsiveCamera = ({ isMobile }) => {
     const position = isMobile ? [0, 6, 12] : [0, 4, 8];
     const fov = isMobile ? 55 : 45;
@@ -84,7 +83,9 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
             shadows: true,
             dpr: dpr,
             style: { width: '100%', height: '100%', background: bgColor },
-            onPointerMissed: () => onSectionSelect(null)
+            onPointerMissed: () => onSectionSelect(null),
+            'aria-label': '3D interactive workbench scene',
+            role: 'application'
         },
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
         React.createElement(Dust, { count: 400 }),
