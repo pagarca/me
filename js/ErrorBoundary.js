@@ -86,15 +86,15 @@ class ErrorBoundary extends React.Component {
                         width: '100%'
                     }
                 },
-                    React.createElement('p', {
-                        style: {
-                            fontSize: '1rem',
-                            opacity: 0.7,
-                            wordBreak: 'break-word',
-                            margin: 0
-                        }
-                    }, this.state.error && this.state.error.toString())
-                )
+                React.createElement('p', {
+                    style: {
+                        fontSize: '1rem',
+                        opacity: 0.7,
+                        wordBreak: 'break-word',
+                        margin: 0
+                    }
+                }, this.state.error ? String(this.state.error.message || this.state.error) : 'An unknown error occurred')
+            )
             );
         }
 
