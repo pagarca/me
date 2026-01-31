@@ -1,4 +1,4 @@
-export const config = {
+const config = {
     colors: {
         retroGreen: '#4cd137',
         retroGreenGlow: 'rgba(76, 209, 55, 0.7)',
@@ -121,3 +121,5 @@ export const config = {
         }
     }
 };
+
+export default config;
