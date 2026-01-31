@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Suspense } from 'react';
 import Scene from 'scene';
+import LoadingScreen from 'loading_screen';
 import { coffeeFacts } from 'coffee_facts';
 
 const content = {
@@ -150,12 +151,16 @@ export default function App() {
                 )
             )
         ),
-        // 3D Scene with props
-        React.createElement(Scene, {
-            onSectionSelect: handleSectionSelect,
-            activeSection: activeSection,
-            isNightMode: isNightMode,
-            onToggleLight: toggleLight
-        })
+        // 3D Scene with props (wrapped in Suspense for loading screen)
+        React.createElement(
+            Suspense,
+            { fallback: React.createElement(LoadingScreen) },
+            React.createElement(Scene, {
+                onSectionSelect: handleSectionSelect,
+                activeSection: activeSection,
+                isNightMode: isNightMode,
+                onToggleLight: toggleLight
+            })
+        )
     );
 }
