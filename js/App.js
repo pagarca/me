@@ -48,7 +48,7 @@ export default function App() {
     const toggleLight = useCallback(() => setNightMode((prev) => !prev), []);
     const toggleHighContrast = useCallback(() => setHighContrast((prev) => !prev), []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape' && activeSection) {
                 setActiveSection(null);
@@ -58,14 +58,14 @@ export default function App() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [activeSection]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
         const savedContrast = localStorage.getItem('highContrast');
         if (savedTheme === 'night') setNightMode(true);
         if (savedContrast === 'true') setHighContrast(true);
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         localStorage.setItem('theme', isNightMode ? 'night' : 'day');
         localStorage.setItem('highContrast', highContrast.toString());
 
@@ -79,7 +79,7 @@ export default function App() {
         }
     }, [isNightMode, highContrast]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const titles = ["Pau's Workbench"];
         const i = loopNum % titles.length;
         const fullText = titles[i];
@@ -122,16 +122,16 @@ export default function App() {
     const colors = config.colors;
     const accentColor = highContrast ? colors.accessibility.highContrastColors.foreground : colors.retroGreen;
 
+    const overlayProps = {
+        className: 'overlay',
+        role: 'main',
+        'aria-live': 'polite'
+    };
+
     return React.createElement(
         React.Fragment,
         null,
-        React.createElement(
-            'div',
-            {
-                className: 'overlay',
-                role: 'main',
-                'aria-live': 'polite'
-            },
+        React.createElement('div', overlayProps,
             React.createElement('div', {
                 className: 'controls-bar',
                 style: { display: 'flex', gap: '10px', marginBottom: '10px' }
@@ -162,7 +162,7 @@ export default function App() {
                     className: 'info-card',
                     role: 'dialog',
                     'aria-modal': 'true',
-                    'aria-labelledby': `dialog-title-${activeSection}`
+                    'aria-labelledby': 'dialog-title-' + activeSection
                 },
                 currentData.image && React.createElement('img', {
                     src: currentData.image,
@@ -170,7 +170,7 @@ export default function App() {
                     alt: 'Profile photo'
                 }),
                 React.createElement('h2', {
-                    id: `dialog-title-${activeSection}`
+                    id: 'dialog-title-' + activeSection
                 }, currentData.title),
                 React.createElement('p', null, currentData.text),
                 currentData.skills && React.createElement(
@@ -190,9 +190,9 @@ export default function App() {
                             className: 'social-btn',
                             target: '_blank',
                             rel: 'noopener noreferrer',
-                            'aria-label': `Open ${link.name} in new tab`
+                            'aria-label': 'Open ' + link.name + ' in new tab'
                         },
-                            link.icon && React.createElement('i', { className: `${link.icon}`, style: { marginRight: '8px' } }),
+                            link.icon && React.createElement('i', { className: link.icon, style: { marginRight: '8px' } }),
                             link.name
                         )
                     )

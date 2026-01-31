@@ -77,16 +77,18 @@ const Scene = ({ onSectionSelect, activeSection, isNightMode, onToggleLight }) =
     const floorGeometry = useMemo(() => React.createElement('planeGeometry', { args: [100, 100] }), []);
     const floorMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: bgColor }), [bgColor]);
 
+    const canvasProps = {
+        shadows: true,
+        dpr: dpr,
+        style: { width: '100%', height: '100%', background: bgColor },
+        onPointerMissed: () => onSectionSelect(null),
+        'aria-label': '3D interactive workbench scene',
+        role: 'application'
+    };
+
     return React.createElement(
         Canvas,
-        {
-            shadows: true,
-            dpr: dpr,
-            style: { width: '100%', height: '100%', background: bgColor },
-            onPointerMissed: () => onSectionSelect(null),
-            'aria-label': '3D interactive workbench scene',
-            role: 'application'
-        },
+        canvasProps,
         React.createElement('fog', { attach: 'fog', args: [bgColor, 10, 30] }),
         React.createElement(Dust, { count: 400 }),
         React.createElement(ResponsiveCamera, { isMobile }),
