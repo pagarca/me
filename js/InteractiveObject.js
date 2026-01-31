@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick, onHoverChange, wobble, ...meshProps }) => {
+const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick, onHoverChange, wobble, position, rotation, scale: scaleProp }) => {
     const [hovered, setHover] = useState(false);
     const hoverTimeout = useRef();
     const innerRef = useRef();
@@ -53,18 +53,21 @@ const InteractiveObject = ({ id, onSectionSelect, children, onClick: customClick
         }
     };
 
+    const groupProps = {
+        position: position,
+        rotation: rotation,
+        scale: hovered ? 1.05 : (scaleProp || 1)
+    };
+
     return React.createElement(
         'group',
         {
-            ...meshProps,
+            ...groupProps,
             onPointerEnter: handlePointerEnter,
             onPointerLeave: handlePointerLeave,
             onClick: handleClick,
             onKeyDown: handleKeyDown,
-            tabIndex: 0,
-            'aria-label': id,
-            role: 'button',
-            scale: hovered ? 1.05 : 1,
+            tabIndex: 0
         },
         React.createElement(
             'group',
