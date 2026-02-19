@@ -13,15 +13,6 @@ const ResponsiveCamera = ({ isMobile }) => {
 const Dust = ({ count = 300 }) => {
     const points = React.useRef();
 
-    const particleGeometry = useMemo(() => React.createElement('bufferGeometry', null), []);
-    const particleMaterial = useMemo(() => React.createElement('pointsMaterial', {
-        size: 0.02,
-        color: '#ffffff',
-        transparent: true,
-        opacity: 0.15,
-        sizeAttenuation: true
-    }), []);
-
     const particles = useMemo(() => {
         const temp = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
@@ -35,6 +26,25 @@ const Dust = ({ count = 300 }) => {
         return temp;
     }, [count]);
 
+    const particleGeometry = useMemo(() => React.createElement(
+        'bufferGeometry',
+        null,
+        React.createElement('bufferAttribute', {
+            attach: 'attributes-position',
+            count: count,
+            itemSize: 3,
+            array: particles
+        })
+    ), [particles, count]);
+
+    const particleMaterial = useMemo(() => React.createElement('pointsMaterial', {
+        size: 0.02,
+        color: '#ffffff',
+        transparent: true,
+        opacity: 0.15,
+        sizeAttenuation: true
+    }), []);
+
     useFrame((state) => {
         if (points.current) {
             points.current.rotation.y += 0.0005;
@@ -46,12 +56,6 @@ const Dust = ({ count = 300 }) => {
         'points',
         { ref: points, position: [0, -2, 0] },
         particleGeometry,
-        React.createElement('bufferAttribute', {
-            attach: 'attributes-position',
-            count: count,
-            itemSize: 3,
-            array: particles
-        }),
         particleMaterial
     );
 };

@@ -37,7 +37,6 @@ const content = {
 export default function App() {
     const [activeSection, setActiveSection] = useState(null);
     const [isNightMode, setNightMode] = useState(false);
-    const [highContrast, setHighContrast] = useState(false);
     const [dynamicContent, setDynamicContent] = useState(null);
 
     const [text, setText] = useState('');
@@ -46,7 +45,6 @@ export default function App() {
     const [typingSpeed, setTypingSpeed] = useState(150);
 
     const toggleLight = useCallback(() => setNightMode((prev) => !prev), []);
-    const toggleHighContrast = useCallback(() => setHighContrast((prev) => !prev), []);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -60,24 +58,12 @@ export default function App() {
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
-        const savedContrast = localStorage.getItem('highContrast');
         if (savedTheme === 'night') setNightMode(true);
-        if (savedContrast === 'true') setHighContrast(true);
     }, []);
 
     useEffect(() => {
         localStorage.setItem('theme', isNightMode ? 'night' : 'day');
-        localStorage.setItem('highContrast', highContrast.toString());
-
-        const body = document.getElementById('app-body');
-        if (body) {
-            if (highContrast) {
-                body.classList.add('high-contrast');
-            } else {
-                body.classList.remove('high-contrast');
-            }
-        }
-    }, [isNightMode, highContrast]);
+    }, [isNightMode]);
 
     useEffect(() => {
         const titles = ["Pau's Workbench"];
@@ -120,7 +106,6 @@ export default function App() {
 
     const currentData = dynamicContent || content[activeSection];
     const colors = config.colors;
-    const accentColor = highContrast ? colors.accessibility.highContrastColors.foreground : colors.retroGreen;
 
     const overlayProps = {
         className: 'overlay',
@@ -131,26 +116,20 @@ export default function App() {
     return React.createElement(
         React.Fragment,
         null,
+        React.createElement('div', {
+            className: 'controls-bar',
+            style: { position: 'absolute', top: '20px', right: '20px', zIndex: 20 }
+        },
+        React.createElement('button', {
+            onClick: toggleLight,
+            'aria-label': isNightMode ? 'Switch to day mode' : 'Switch to night mode',
+            className: 'control-btn',
+            style: { color: colors.retroGreen, borderColor: colors.retroGreen }
+        }, isNightMode ? '☀️ Day' : '🌙 Night')
+        ),
         React.createElement('div', overlayProps,
-            React.createElement('div', {
-                className: 'controls-bar',
-                style: { display: 'flex', gap: '10px', marginBottom: '10px' }
-            },
-            React.createElement('button', {
-                onClick: toggleLight,
-                'aria-label': isNightMode ? 'Switch to day mode' : 'Switch to night mode',
-                className: 'control-btn',
-                style: { color: accentColor, borderColor: accentColor }
-            }, isNightMode ? '☀️ Day' : '🌙 Night'),
-            React.createElement('button', {
-                onClick: toggleHighContrast,
-                'aria-label': highContrast ? 'Disable high contrast' : 'Enable high contrast',
-                className: 'control-btn',
-                style: { color: accentColor, borderColor: accentColor }
-            }, highContrast ? '◐ Normal' : '◑ High Contrast')
-            ),
             React.createElement('h1', {
-                style: { color: highContrast ? colors.accessibility.highContrastColors.foreground : accentColor }
+                style: { color: colors.retroGreen }
             },
                 text,
                 React.createElement('span', { className: 'cursor' }, '|')

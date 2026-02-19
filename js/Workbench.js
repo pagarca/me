@@ -55,7 +55,7 @@ const Workbench = ({ onSectionSelect, activeSection, isNightMode, onToggleLight,
             deskGeometry,
             deskMaterial
         ),
-        [-2.5, 2.5].map((x) =>
+        [-2.5, 2.5].flatMap((x) =>
             [-1.2, 1.2].map((z) =>
                 React.createElement(
                     'mesh',
