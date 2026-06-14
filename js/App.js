@@ -3,6 +3,7 @@ import Scene from 'scene';
 import LoadingScreen from 'loading_screen';
 import { coffeeFacts } from 'coffee_facts';
 import config from 'config';
+import { playKeyClick, enableSound, disableSound } from 'audio_manager';
 
 
 const content = {
@@ -38,6 +39,7 @@ export default function App() {
     const [activeSection, setActiveSection] = useState(null);
     const [isNightMode, setNightMode] = useState(false);
     const [dynamicContent, setDynamicContent] = useState(null);
+    const [soundEnabled, setSoundEnabled] = useState(false);
 
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -45,6 +47,13 @@ export default function App() {
     const [typingSpeed, setTypingSpeed] = useState(150);
 
     const toggleLight = useCallback(() => setNightMode((prev) => !prev), []);
+
+    const toggleSound = useCallback(() => {
+        setSoundEnabled(prev => {
+            if (prev) { disableSound(); return false; }
+            else { enableSound(); return true; }
+        });
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -91,7 +100,15 @@ export default function App() {
     }, [text, isDeleting, loopNum]);
 
     const handleSectionSelect = useCallback((id) => {
-        if (id === 'coffee') {
+        playKeyClick();
+        if (id === 'coffee_spill') {
+            const fact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
+            setDynamicContent({
+                title: "Spilt Coffee! ☕💦",
+                text: "After 5 cups things get messy... you found a secret! Fun fact: " + fact
+            });
+            setActiveSection('coffee');
+        } else if (id === 'coffee') {
             const randomFact = coffeeFacts[Math.floor(Math.random() * coffeeFacts.length)];
             setDynamicContent({
                 title: "Coffee Fact ☕",
@@ -120,6 +137,18 @@ export default function App() {
             className: 'controls-bar',
             style: { position: 'absolute', top: '20px', right: '20px', zIndex: 20 }
         },
+        React.createElement('button', {
+            onClick: toggleSound,
+            'aria-label': soundEnabled ? 'Mute sound' : 'Enable sound',
+            className: 'control-btn',
+            style: { color: colors.retroGreen, borderColor: colors.retroGreen }
+        },
+            React.createElement('i', {
+                className: soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark',
+                style: { marginRight: '6px' }
+            }),
+            soundEnabled ? 'Sound' : 'Sound'
+        ),
         React.createElement('button', {
             onClick: toggleLight,
             'aria-label': isNightMode ? 'Switch to day mode' : 'Switch to night mode',

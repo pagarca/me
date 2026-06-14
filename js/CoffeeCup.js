@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import InteractiveObject from 'interactive_object';
 
@@ -50,8 +50,62 @@ const Steam = () => {
     );
 };
 
+const SPILL_DURATION = 1.6;
+const SPILL_GRAVITY = 5;
+
+const Spill = () => {
+    const groupRef = useRef();
+    const startTimeRef = useRef(null);
+
+    const droplets = useMemo(() =>
+        Array.from({ length: 12 }, (_, i) => {
+            const angle = (i / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+            const speed = 0.2 + Math.random() * 0.4;
+            return {
+                vx: Math.cos(angle) * speed,
+                vz: Math.sin(angle) * speed,
+                vy: 0.2 + Math.random() * 0.5,
+                size: 0.018 + Math.random() * 0.015,
+            };
+        })
+    , []);
+
+    useFrame((state) => {
+        if (!groupRef.current) return;
+        if (startTimeRef.current === null) startTimeRef.current = state.clock.elapsedTime;
+        const t = state.clock.elapsedTime - startTimeRef.current;
+
+        groupRef.current.children.forEach((child, i) => {
+            const d = droplets[i];
+            child.position.x = d.vx * t;
+            child.position.z = d.vz * t;
+            child.position.y = 0.25 + d.vy * t - 0.5 * SPILL_GRAVITY * t * t;
+            child.material.opacity = Math.max(0, 1 - t / SPILL_DURATION);
+        });
+    });
+
+    return React.createElement(
+        'group',
+        { ref: groupRef },
+        ...droplets.map((d, i) =>
+            React.createElement(
+                'mesh',
+                { key: i },
+                React.createElement('sphereGeometry', { args: [d.size, 6, 6] }),
+                React.createElement('meshStandardMaterial', {
+                    color: '#4a2511',
+                    transparent: true,
+                    depthWrite: false,
+                })
+            )
+        )
+    );
+};
+
 const CoffeeCup = ({ onSectionSelect, wobble, onHover }) => {
     const [hovered, setHovered] = useState(false);
+    const [isSpilling, setIsSpilling] = useState(false);
+    const clickCountRef = useRef(0);
 
     const cupGeometry = useMemo(() => React.createElement('cylinderGeometry', { args: [0.15, 0.12, 0.3, 32, 1, true] }), []);
     const cupMaterial = useMemo(() => React.createElement('meshStandardMaterial', { color: '#ffffff', side: 2 }), []);
@@ -69,11 +123,28 @@ const CoffeeCup = ({ onSectionSelect, wobble, onHover }) => {
         if (onHover) onHover(val);
     };
 
+    const handleCoffeeClick = useCallback(() => {
+        if (isSpilling) {
+            onSectionSelect('coffee');
+            return;
+        }
+        clickCountRef.current += 1;
+        if (clickCountRef.current >= 5) {
+            clickCountRef.current = 0;
+            setIsSpilling(true);
+            onSectionSelect('coffee_spill');
+            setTimeout(() => setIsSpilling(false), 2000);
+        } else {
+            onSectionSelect('coffee');
+        }
+    }, [isSpilling, onSectionSelect]);
+
     return React.createElement(
         InteractiveObject,
         {
             id: 'coffee',
             onSectionSelect,
+            onClick: handleCoffeeClick,
             position: [-1.2, 0.1, 0.8],
             onHoverChange: handleHover,
             wobble
@@ -102,7 +173,8 @@ const CoffeeCup = ({ onSectionSelect, wobble, onHover }) => {
             handleGeometry,
             cupMaterial
         ),
-        (hovered || wobble) && React.createElement(Steam, null)
+        (hovered || wobble) && React.createElement(Steam, null),
+        isSpilling && React.createElement(Spill, null)
     );
 };
 
